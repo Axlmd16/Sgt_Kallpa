@@ -1,0 +1,119 @@
+name: backendfutbol
+
+services:
+    postgres:
+        image: postgres:16-alpine
+        container_name: kallpa-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB:-futbol_db}
+            POSTGRES_USER: ${POSTGRES_USER:-dev_user}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    mariadb:
+        image: mariadb:11
+        container_name: mariadb-db
+        restart: unless-stopped
+        environment:
+            MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-rootpass}
+            MARIADB_DATABASE: ${MARIADB_DATABASE:-sportDB}
+            MARIADB_USER: ${MARIADB_USER:-desarrollo}
+            MARIADB_PASSWORD: ${MARIADB_PASSWORD:-desarrollo}
+        ports:
+            - "3306:3306"
+        volumes:
+            - mariadb_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    app:
+        image: joseguaman1/users-docker:v1
+        container_name: springboot-app
+        restart: unless-stopped
+        depends_on:
+            mariadb:
+                condition: service_healthy
+        ports:
+            - "8096:8096"
+        environment:
+            SPRING_APPLICATION_NAME: user
+            SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/${MARIADB_DATABASE:-sportDB}
+            SPRING_DATASOURCE_USERNAME: ${MARIADB_USER:-desarrollo}
+            SPRING_DATASOURCE_PASSWORD: ${MARIADB_PASSWORD:-desarrollo}
+            SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+            SPRING_JPA_HIBERNATE_DDL_AUTO: update
+            SPRING_JPA_SHOW_SQL: "true"
+            SPRING_DOCKER_COMPOSE_ENABLED: "false"
+            CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:4200,http://localhost,http://localhost:5173
+            CORS_ALLOWED_METHODS: GET,POST,PUT,DELETE,OPTIONS
+            CORS_ALLOWED_HEADERS: "*"
+            CORS_ALLOW_CREDENTIALS: "true"
+            OTHERS_KEY: ${OTHERS_KEY:-1234567FDUCAMETB}
+            SERVER_PORT: 8096
+
+    person-ms-init:
+        image: backendfutbol-backend
+        container_name: kallpa-person-ms-init
+        restart: "no"
+        env_file:
+            - ./BackendFutbol/.env
+        environment:
+            PERSON_MS_BASE_URL: http://app:8096
+        depends_on:
+            app:
+                condition: service_started
+        command: ["python", "scripts/init_person_ms.py"]
+
+    backend:
+        image: backendfutbol-backend
+        build:
+            context: ./BackendFutbol
+            dockerfile: Dockerfile
+        container_name: kallpa-backend
+        restart: unless-stopped
+        env_file:
+            - ./BackendFutbol/.env
+        depends_on:
+            postgres:
+                condition: service_healthy
+            app:
+                condition: service_started
+            person-ms-init:
+                condition: service_completed_successfully
+        environment:
+            # Use Docker service DNS names instead of localhost inside the container.
+            DB_HOST: postgres
+            PERSON_MS_BASE_URL: http://app:8096
+        ports:
+            - "8001:8000"
+
+    frontend:
+        build:
+            context: ./FrontendFutbol
+            dockerfile: Dockerfile
+            args:
+                VITE_API_URL: ${VITE_API_URL:-http://localhost:8001/api/v1}
+        container_name: kallpa-frontend
+        restart: unless-stopped
+        depends_on:
+            - backend
+        ports:
+            - "5173:80"
+
+volumes:
+    postgres_data:
+    # Persistent storage for the external person service.
+    mariadb_data:
+        name: backendfutbol_mariadb_data

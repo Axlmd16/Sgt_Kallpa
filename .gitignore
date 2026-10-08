@@ -1,0 +1,67 @@
+# Configuración local y credenciales
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
+!example.env
+/.aws/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencias y entornos virtuales
+node_modules/
+.venv/
+venv/
+.virtualenv/
+
+# Compilación y paquetes generados
+dist/
+dist-ssr/
+build/
+*.egg-info/
+*.egg
+
+# Cachés, pruebas y cobertura
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+coverage.xml
+pytest-report.xml
+.scannerwork/
+
+# Datos locales y archivos temporales
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.pid
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+logs/
+tmp/
+temp/
+docker-data/
+
+# Archivos del sistema y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.iml
