@@ -1,47 +1,28 @@
-# Registro de revisión entre pares
+# Formato de revisión entre pares — 8 de octubre de 2026
 
-**Asignatura:** Software Security  
-**Práctica:** APE 01  
-**Fase:** 2 – Tríada CIA y matriz de activos  
-**Proyecto evaluado:** Kallpa UNL  
-**Fecha:** 8 de octubre de 2026
+**Asignatura:** Software Security · Universidad Nacional de Loja
+**Práctica y proyecto:** APE 01 · Sgt_Kallpa / Kallpa UNL
+**Documento a revisar:** [Matriz de activos y amenazas](matriz-activos-amenazas.md)
+**Integrantes consignados en la documentación previa:** Jostin Santiago Jimenez Ulloa; Jhostin Alexander Tapia Marquez; Elias Sebastian Poma Granda.
+**Revisores y grupo:** Pendiente de registrar en clase.
+**Fecha y modalidad efectivas:** Pendiente de registrar.
 
-## 1. Participantes
+## Objetivo y criterios
 
-**Integrantes del proyecto:** [Nombres]
+Contrastar si los activos corresponden al sistema implementado, si cada nivel de confidencialidad, integridad y disponibilidad tiene justificación específica, si cada amenaza y consecuencia son plausibles y si la priorización responde al impacto. Comprobar que las amenazas no se presentan como vulnerabilidades verificadas y que no se divulgan datos sensibles.
 
-**Compañeros revisores:** [Nombres]
+## Observaciones recibidas
 
-## 2. Objetivo de la revisión
+| N.º | Revisor | Activo o sección | Observación concreta | Ajuste sugerido | Fecha |
+|---|---|---|---|---|---|
+| 1 | Pendiente | Pendiente | Pendiente | Pendiente | Pendiente |
 
-Evaluar la matriz de activos y amenazas del proyecto Kallpa UNL con el propósito de identificar activos omitidos, valorar la coherencia de su clasificación según la tríada CIA y mejorar la identificación de amenazas.
+## Cambios efectuados tras la revisión
 
-## 3. Aspectos revisados
+| N.º | Observación vinculada | Cambio realizado o motivo para no aplicarlo | Documento/sección | Fecha |
+|---|---|---|---|---|
+| 1 | Pendiente | Pendiente | Pendiente | Pendiente |
 
-- Identificación de los principales activos de información.
-- Clasificación de confidencialidad, integridad y disponibilidad.
-- Coherencia entre las características de cada activo y sus niveles de importancia.
-- Identificación de al menos una amenaza por activo.
-- Inclusión de datos almacenados, información en tránsito, servicios y credenciales.
+## Conclusiones de la sesión
 
-## 4. Observaciones recibidas
-
-| N.º | Activo o sección | Observación del revisor | Cambio propuesto |
-| --- | ---------------- | ----------------------- | ---------------- |
-| 1   | [Completar]      | [Observación real]      | [Completar]      |
-| 2   | [Completar]      | [Observación real]      | [Completar]      |
-| 3   | [Completar]      | [Observación real]      | [Completar]      |
-
-## 5. Cambios realizados
-
-Registrar las modificaciones aplicadas a la matriz después de recibir las observaciones.
-
-- **Cambio 1:** [Describir modificación].
-- **Cambio 2:** [Describir modificación].
-- **Cambio 3:** [Describir modificación].
-
-Si alguna observación no se incorpora, justificar brevemente el motivo.
-
-## 6. Conclusión de la revisión
-
-[Redactar después del intercambio de matrices. Explicar qué aspectos se mejoraron y cómo las observaciones contribuyeron a una clasificación más coherente de los activos y sus amenazas.]
+Pendiente de la revisión entre pares real. Registrar acuerdos, desacuerdos fundamentados, activos omitidos y ajustes de niveles CIA después del intercambio de matrices. La preparación de este formato no acredita que la revisión haya ocurrido.

@@ -1,187 +1,147 @@
-# Inventario inicial de superficie de ataque
-
-**Proyecto:** Kallpa UNL  
-**Asignatura:** Software Security  
-**Práctica:** APE 01  
-**Fase:** 1 – Inventario de superficie de ataque  
-**Fecha:** 2 de octubre de 2026  
-**Integrantes:**
-
-- Jostin Santiago Jimenez Ulloa
-- Jhostin Alexander Tapia Marquez
-- Elias Sebastian Poma Granda
-
-## 1. Objetivo
-
-Identificar y documentar los principales puntos de interacción y exposición de la aplicación Kallpa UNL, incluyendo formularios, rutas web, servicios, endpoints y componentes que podrían representar puntos de entrada para amenazas de seguridad.
-
-## 2. Metodología
-
-El inventario se elabora a partir de la revisión de la estructura del proyecto, las rutas definidas en el frontend, los servicios registrados en el backend y la configuración de Docker.
-
-Para completar la identificación se realizará un recorrido por las funcionalidades de la aplicación en su entorno local, utilizando el navegador y las herramientas de desarrollador para observar las solicitudes HTTP.
-
-Cada elemento se registrará con su descripción, tipo de exposición, posible amenaza y evidencia correspondiente.
-
-Las amenazas indicadas son hipótesis de análisis y no representan vulnerabilidades confirmadas.
-
-## 3. Inventario de elementos
-
-| ID    | Elemento                      | Tipo de exposición        | Posible amenaza                                           |
-| ----- | ----------------------------- | ------------------------- | --------------------------------------------------------- |
-| SA-01 | Inicio de sesión              | Formulario público        | Intentos de acceso mediante credenciales comprometidas    |
-| SA-02 | Recuperación de contraseña    | Formulario público        | Abuso de recuperación o enumeración de cuentas            |
-| SA-03 | Inscripción pública           | Formularios web           | Manipulación de entradas y exposición de datos personales |
-| SA-04 | Administración de usuarios    | Módulo protegido          | Acceso o modificación sin autorización                    |
-| SA-05 | Gestión de deportistas        | Módulo protegido          | Consulta o modificación indebida de registros             |
-| SA-06 | Gestión de asistencia         | Módulo protegido          | Alteración de registros de asistencia                     |
-| SA-07 | Evaluaciones deportivas       | Módulo protegido          | Manipulación no autorizada de resultados                  |
-| SA-08 | Reportes y estadísticas       | Módulo protegido          | Acceso indebido a información y exportaciones             |
-| SA-09 | API REST de FastAPI           | Endpoints HTTP            | Solicitudes no autorizadas o entradas maliciosas          |
-| SA-10 | Swagger UI                    | Documentación de API      | Exposición de información sobre endpoints                 |
-| SA-11 | PostgreSQL                    | Servicio de base de datos | Acceso no autorizado o pérdida de información             |
-| SA-12 | Servicio de personas          | Servicio HTTP             | Acceso indebido o abuso de la integración                 |
-| SA-13 | MariaDB                       | Servicio de base de datos | Acceso no autorizado a datos                              |
-| SA-14 | Perfil y cambio de contraseña | Funcionalidad autenticada | Modificación no autorizada de información de cuenta       |
-
-## 4. Descripción de los principales puntos de exposición
-
-### SA-01. Inicio de sesión
-
-Permite el acceso a los usuarios registrados mediante el ingreso de credenciales.
-
-**Amenazas potenciales:** ataques de fuerza bruta, uso de credenciales comprometidas y fallos en la validación de autenticación.
-
-**Verificación pendiente:** identificar la ruta exacta, el endpoint de autenticación, el método HTTP y la respuesta del sistema ante credenciales inválidas.
-
-**Evidencia:** evidencias/SA-01-login.png
-
-### SA-02. Recuperación de contraseña
-
-Permite iniciar el proceso de recuperación de acceso a una cuenta.
-
-**Amenazas potenciales:** enumeración de usuarios, abuso de solicitudes y uso indebido de mecanismos de recuperación.
-
-**Verificación pendiente:** revisar las respuestas ante cuentas existentes e inexistentes, sin utilizar cuentas ajenas.
-
-**Evidencia:** evidencias/SA-02-recuperacion.png
-
-### SA-03. Inscripción pública
-
-Contiene formularios para registrar información de deportistas y representantes.
-
-**Amenazas potenciales:** introducción de datos no válidos, manipulación de parámetros y exposición de información personal.
-
-**Verificación pendiente:** identificar los campos recibidos, las validaciones disponibles y los endpoints utilizados.
-
-**Evidencia:** evidencias/SA-03-inscripcion.png
-
-### SA-04. Administración de usuarios
-
-El frontend restringe esta sección al rol de administrador.
-
-**Amenaza potencial:** acceso a funciones administrativas mediante permisos insuficientes o validaciones incompletas.
-
-**Verificación pendiente:** comprobar si el backend también aplica las restricciones correspondientes.
-
-**Evidencia:** evidencias/SA-04-usuarios.png
-
-### SA-05. Gestión de deportistas
-
-Permite consultar, registrar y actualizar información de los deportistas.
-
-**Amenazas potenciales:** acceso a información personal sin autorización y alteración de registros.
-
-**Verificación pendiente:** comprobar las restricciones por rol y los controles aplicados a las operaciones de consulta y modificación.
-
-**Evidencia:** evidencias/SA-05-deportistas.png
-
-### SA-06. Gestión de asistencia
-
-Permite registrar y consultar la asistencia de los deportistas.
-
-**Amenaza potencial:** alteración de información de asistencia por usuarios no autorizados.
-
-**Verificación pendiente:** comprobar los permisos asociados a la creación y modificación de registros.
-
-**Evidencia:** evidencias/SA-06-asistencia.png
-
-### SA-07. Evaluaciones deportivas
-
-Permite registrar y consultar resultados de evaluaciones físicas y técnicas.
-
-**Amenaza potencial:** modificación indebida de resultados y consulta de información restringida.
-
-**Verificación pendiente:** revisar los roles autorizados y las validaciones de los datos registrados.
-
-**Evidencia:** evidencias/SA-07-evaluaciones.png
-
-### SA-08. Reportes y estadísticas
-
-Permite consultar información de seguimiento deportivo y exportar reportes.
-
-**Amenazas potenciales:** divulgación de información mediante reportes y exportación no autorizada.
-
-**Verificación pendiente:** comprobar el acceso según el rol y la información incluida en las exportaciones.
-
-**Evidencia:** evidencias/SA-08-reportes.png
-
-### SA-09. API REST
-
-La aplicación dispone de una API desarrollada en FastAPI, organizada bajo el prefijo `/api/v1`.
-
-**Amenazas potenciales:** falta de autorización, entradas maliciosas y exposición de información mediante respuestas.
-
-**Verificación pendiente:** enumerar los endpoints exactos, métodos HTTP, parámetros y requerimientos de autenticación utilizando Swagger UI y las herramientas de desarrollador.
-
-**Evidencia:** evidencias/SA-09-api.png
-
-### SA-10. Documentación Swagger
-
-La documentación interactiva se encuentra configurada en `/docs` dentro del backend.
-
-**Amenaza potencial:** divulgación de información sobre la estructura y operaciones de la API cuando se expone a usuarios que no deberían consultarla.
-
-**Verificación pendiente:** comprobar su accesibilidad y documentar los endpoints visibles.
-
-**Evidencia:** evidencias/SA-10-swagger.png
-
-### SA-11, SA-12 y SA-13. Servicios de datos y personas
-
-Docker Compose publica PostgreSQL, MariaDB y el servicio de personas en puertos del equipo anfitrión.
-
-**Amenazas potenciales:** accesos no autorizados, exposición innecesaria de servicios y utilización de credenciales débiles.
-
-**Verificación pendiente:** comprobar los puertos publicados, las interfaces de escucha y los controles de acceso locales.
-
-**Evidencia:** evidencias/SA-11-servicios-docker.png
-
-## 5. Registro complementario de rutas, métodos y parámetros
-
-Completar durante la exploración de la aplicación:
-
-| ID    | Ruta o endpoint       | Método HTTP     | Parámetros o datos recibidos | Autenticación | Evidencia |
-| ----- | --------------------- | --------------- | ---------------------------- | ------------- | --------- |
-| SA-01 | [Observar en Network] | [GET/POST/etc.] | [Campos reales]              | [Verificar]   | SA-01     |
-| SA-02 | [Observar en Network] | [Verificar]     | [Campos reales]              | [Verificar]   | SA-02     |
-| SA-03 | [Observar en Network] | [Verificar]     | [Campos reales]              | [Verificar]   | SA-03     |
-| SA-04 | [Observar en Swagger] | [Verificar]     | [Parámetros reales]          | [Verificar]   | SA-04     |
-| SA-05 | [Observar en Swagger] | [Verificar]     | [Parámetros reales]          | [Verificar]   | SA-05     |
-
-Añadir los demás endpoints identificados durante la exploración.
-
-## 6. Evidencias
-
-Las capturas de pantalla se almacenarán en la carpeta `evidencias/` de la Fase 1.
-
-Cada captura debe corresponder al elemento identificado y permitir verificar su existencia o exposición.
-
-No se incluirán contraseñas, tokens, información personal real ni otros datos sensibles.
-
-## 7. Conclusión preliminar
-
-La revisión de la estructura de Kallpa UNL permite identificar diferentes puntos de exposición relacionados con autenticación, formularios públicos, módulos protegidos, API REST y servicios de infraestructura.
-
-Estos elementos constituyen la base del inventario inicial de superficie de ataque y permitirán orientar las siguientes fases del análisis de seguridad.
-
-La existencia de un punto de exposición no implica necesariamente una vulnerabilidad. Para determinar fallos concretos será necesario efectuar verificaciones controladas y registrar sus resultados.
+# Inventario de superficie de ataque — Fase 1
+
+**Proyecto:** Sgt_Kallpa / Kallpa UNL · **Corte:** 2 de octubre de 2026 (revisión de código al 8 de octubre).
+
+Este inventario registra puntos de entrada definidos en código. «Amenaza potencial» expresa un escenario por comprobar, no una vulnerabilidad demostrada. Las rutas de navegador y los endpoints REST son superficies distintas. No se hicieron solicitudes ni capturas de ejecución. La guía PDF indicada no está disponible en el entorno.
+
+## Controles de acceso observados
+
+- **Público:** no hay dependencia de autenticación en el endpoint.
+- **Autenticado:** `get_current_account` valida el JWT y la cuenta; no restringe por rol.
+- **Administrador:** `get_current_admin`. **Administrador/entrenador:** `get_current_coach_or_admin` o `validate_report_permissions`. La primera dependencia se define en `user_router.py` y la segunda en `report_router.py`.
+- En React, `ProtectedRoute` comprueba la presencia de un token en `localStorage`; `RoleRoute` lee el rol de los datos locales. Esta comprobación de navegación no sustituye la autorización del backend ([ProtectedRoute.jsx](../../../FrontendFutbol/src/app/router/ProtectedRoute.jsx), [RoleRoute.jsx](../../../FrontendFutbol/src/app/router/RoleRoute.jsx)).
+
+| ID | Elemento | Ruta/Endpoint | Método HTTP | Entrada/Parámetros | Rol/Autenticación | Amenaza potencial | Evidencia del código |
+|---|---|---|---|---|---|---|---|
+| N-01 | Navegador: Inicio | `/` | GET (navegación) | — | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-02 | Navegador: Elegir registro | `/register` | GET (navegación) | — | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-03 | Navegador: Registro escuela | `/register/escuela` | GET (navegación) | representante y menor | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-04 | Navegador: Registro club | `/register/club` | GET (navegación) | deportista | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-05 | Navegador: Inicio de sesión | `/login` | GET (navegación) | correo y contraseña | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-06 | Navegador: Recuperación | `/forgot-password` | GET (navegación) | correo | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-07 | Navegador: Nueva contraseña | `/reset-password?token=…` | GET (navegación) | query: token; contraseña nueva en formulario | Frontend: Público | Manipulación de entradas o datos expuestos | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-08 | Navegador: Panel | `/dashboard` | GET (navegación) | — | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-09 | Navegador: Usuarios | `/users` | GET (navegación) | búsqueda y filtros | Frontend: Token y Administrator | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-10 | Navegador: Crear usuario | `/users/create` | GET (navegación) | datos personales, rol, correo, contraseña | Frontend: Token y Administrator | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-11 | Navegador: Editar usuario | `/users/edit/:id` | GET (navegación) | id; datos de usuario | Frontend: Token y Administrator | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-12 | Navegador: Deportistas | `/inscription` | GET (navegación) | búsqueda y filtros | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-13 | Navegador: Alias deportistas | `/inscription/deportista` | GET (navegación) | búsqueda y filtros | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-14 | Navegador: Crear deportista | `/inscription/create` | GET (navegación) | datos de deportista | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-15 | Navegador: Editar deportista | `/inscription/edit/:id` | GET (navegación) | id; datos de deportista | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-16 | Navegador: Detalle deportista | `/inscription/athlete/:id` | GET (navegación) | id | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-17 | Navegador: Editar representante | `/inscription/representative/edit/:id` | GET (navegación) | id; datos de representante | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-18 | Navegador: Inscripción menor interna | `/inscription/menor` | GET (navegación) | representante y menor | Frontend: Token y Administrator/Coach | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-19 | Navegador: Evaluaciones | `/seguimiento/evaluations/*` | GET (navegación) | formularios y subrutas de la página | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-20 | Navegador: Estadísticas | `/seguimiento/statistics` | GET (navegación) | filtros | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-21 | Navegador: Reportes | `/seguimiento/reports` | GET (navegación) | tipo, formato y filtros | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-22 | Navegador: Asistencia | `/seguimiento/attendance` | GET (navegación) | fecha, filtros, asistencia | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-23 | Navegador: Perfil | `/profile` | GET (navegación) | datos de cuenta | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| N-24 | Navegador: Cambio de contraseña | `/change-password` | GET (navegación) | contraseña actual y nueva | Frontend: Token local | Acceso a vista o datos fuera del rol previsto | [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [constants.js](../../../FrontendFutbol/src/app/config/constants.js) |
+| A-01 | API: login | `/api/v1/accounts/login` | POST | cuerpo: email, password | Backend: Público | Abuso de autenticación o recuperación | [account_router.py](../../../BackendFutbol/app/services/routers/account_router.py#L35) `login` |
+| A-02 | API: request_password_reset | `/api/v1/accounts/password-reset/request` | POST | cuerpo: email | Backend: Público | Abuso de autenticación o recuperación | [account_router.py](../../../BackendFutbol/app/services/routers/account_router.py#L59) `request_password_reset` |
+| A-03 | API: confirm_password_reset | `/api/v1/accounts/password-reset/confirm` | POST | cuerpo: token, nueva contraseña | Backend: Público | Abuso de autenticación o recuperación | [account_router.py](../../../BackendFutbol/app/services/routers/account_router.py#L84) `confirm_password_reset` |
+| A-04 | API: change_password | `/api/v1/accounts/change-password` | POST | cuerpo: contraseña actual y nueva | Backend: Autenticado, sin filtro de rol | Abuso de autenticación o recuperación | [account_router.py](../../../BackendFutbol/app/services/routers/account_router.py#L109) `change_password` |
+| A-05 | API: refresh_token | `/api/v1/accounts/refresh` | POST | cuerpo: refresh_token | Backend: Público | Abuso de autenticación o recuperación | [account_router.py](../../../BackendFutbol/app/services/routers/account_router.py#L135) `refresh_token` |
+| A-06 | API: register_minor_athlete | `/api/v1/athletes/register-minor` | POST | cuerpo: representative y athlete | Backend: Público | Abuso de entrada pública o divulgación de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L48) `register_minor_athlete` |
+| A-07 | API: register_athlete_unl | `/api/v1/athletes/register-unl` | POST | cuerpo: datos de persona y deportista | Backend: Público | Abuso de entrada pública o divulgación de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L82) `register_athlete_unl` |
+| A-08 | API: get_all_athletes | `/api/v1/athletes/all` | GET | query: page, limit, search, type_athlete, sex, is_active, start_date, end_date | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L119) `get_all_athletes` |
+| A-09 | API: get_by_id | `/api/v1/athletes/{athlete_id}` | GET | ruta: athlete_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L146) `get_by_id` |
+| A-10 | API: update_athlete | `/api/v1/athletes/update/{athlete_id}` | PUT | ruta: athlete_id; cuerpo: datos modificables del deportista | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L190) `update_athlete` |
+| A-11 | API: desactivate_athlete | `/api/v1/athletes/desactivate/{athlete_id}` | PATCH | ruta: athlete_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L240) `desactivate_athlete` |
+| A-12 | API: activate_athlete | `/api/v1/athletes/activate/{athlete_id}` | PATCH | ruta: athlete_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [athlete_router.py](../../../BackendFutbol/app/services/routers/athlete_router.py#L269) `activate_athlete` |
+| A-13 | API: create_bulk_attendance | `/api/v1/attendances/bulk` | POST | cuerpo: attendance_date, time, records (athlete_id, is_present, justification) | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [attendance_router.py](../../../BackendFutbol/app/services/routers/attendance_router.py#L39) `create_bulk_attendance` |
+| A-14 | API: get_attendance_dates | `/api/v1/attendances/dates` | GET | — | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [attendance_router.py](../../../BackendFutbol/app/services/routers/attendance_router.py#L74) `get_attendance_dates` |
+| A-15 | API: get_attendances_by_date | `/api/v1/attendances/by-date` | GET | query: date (alias de attendance_date), type_athlete, search, page, limit | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [attendance_router.py](../../../BackendFutbol/app/services/routers/attendance_router.py#L103) `get_attendances_by_date` |
+| A-16 | API: get_attendance_summary | `/api/v1/attendances/summary` | GET | query: date (alias de attendance_date), type_athlete, search, page, limit | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [attendance_router.py](../../../BackendFutbol/app/services/routers/attendance_router.py#L138) `get_attendance_summary` |
+| A-17 | API: create_endurance_test | `/api/v1/endurance-tests/` | POST | cuerpo: evaluation_id, athlete_id, date, min_duration, total_distance_m, observations | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [endurance_test_router.py](../../../BackendFutbol/app/services/routers/endurance_test_router.py#L32) `create_endurance_test` |
+| A-18 | API: list_endurance_tests | `/api/v1/endurance-tests/` | GET | query: page, limit, evaluation_id, athlete_id, search | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [endurance_test_router.py](../../../BackendFutbol/app/services/routers/endurance_test_router.py#L67) `list_endurance_tests` |
+| A-19 | API: get_endurance_test | `/api/v1/endurance-tests/{test_id}` | GET | ruta: test_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [endurance_test_router.py](../../../BackendFutbol/app/services/routers/endurance_test_router.py#L97) `get_endurance_test` |
+| A-20 | API: update_endurance_test | `/api/v1/endurance-tests/{test_id}` | PATCH | ruta: test_id; cuerpo: campos modificables del test | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [endurance_test_router.py](../../../BackendFutbol/app/services/routers/endurance_test_router.py#L130) `update_endurance_test` |
+| A-21 | API: delete_endurance_test | `/api/v1/endurance-tests/{test_id}` | DELETE | ruta: test_id | Backend: Autenticado, sin filtro de rol | Eliminación indebida de registros | [endurance_test_router.py](../../../BackendFutbol/app/services/routers/endurance_test_router.py#L167) `delete_endurance_test` |
+| A-22 | API: create_evaluation | `/api/v1/evaluations/` | POST | cuerpo: name, date, time, location, observations, user_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [evaluation_router.py](../../../BackendFutbol/app/services/routers/evaluation_router.py#L35) `create_evaluation` |
+| A-23 | API: list_evaluations | `/api/v1/evaluations/` | GET | query: page, limit, search, user_id, date | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [evaluation_router.py](../../../BackendFutbol/app/services/routers/evaluation_router.py#L65) `list_evaluations` |
+| A-24 | API: list_user_evaluations | `/api/v1/evaluations/user/{user_id}` | GET | ruta: user_id; query: skip; query: limit | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [evaluation_router.py](../../../BackendFutbol/app/services/routers/evaluation_router.py#L95) `list_user_evaluations` |
+| A-25 | API: get_evaluation | `/api/v1/evaluations/{evaluation_id}` | GET | ruta: evaluation_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [evaluation_router.py](../../../BackendFutbol/app/services/routers/evaluation_router.py#L124) `get_evaluation` |
+| A-26 | API: update_evaluation | `/api/v1/evaluations/{evaluation_id}` | PUT | ruta: evaluation_id; cuerpo: datos modificables de evaluación | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [evaluation_router.py](../../../BackendFutbol/app/services/routers/evaluation_router.py#L169) `update_evaluation` |
+| A-27 | API: delete_evaluation | `/api/v1/evaluations/{evaluation_id}` | DELETE | ruta: evaluation_id | Backend: Autenticado, sin filtro de rol | Eliminación indebida de registros | [evaluation_router.py](../../../BackendFutbol/app/services/routers/evaluation_router.py#L206) `delete_evaluation` |
+| A-28 | API: generate_attendance_report | `/api/v1/reports/attendance` | POST | cuerpo: format, start_date, end_date, athlete_id, athlete_type, sex | Backend: Administrator/Coach | Exportación de datos fuera de autorización | [report_router.py](../../../BackendFutbol/app/services/routers/report_router.py#L60) `generate_attendance_report` |
+| A-29 | API: generate_tests_report | `/api/v1/reports/tests` | POST | cuerpo: format, start_date, end_date, athlete_id, athlete_type, sex | Backend: Administrator/Coach | Exportación de datos fuera de autorización | [report_router.py](../../../BackendFutbol/app/services/routers/report_router.py#L115) `generate_tests_report` |
+| A-30 | API: generate_statistics_report | `/api/v1/reports/statistics` | POST | cuerpo: format, start_date, end_date, athlete_id, athlete_type, sex | Backend: Administrator/Coach | Exportación de datos fuera de autorización | [report_router.py](../../../BackendFutbol/app/services/routers/report_router.py#L169) `generate_statistics_report` |
+| A-31 | API: get_representative_by_dni | `/api/v1/representatives/by-dni/{dni}` | GET | ruta: dni | Backend: Público | Enumeración de identificadores personales | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L45) `get_representative_by_dni` |
+| A-32 | API: create_representative | `/api/v1/representatives/create` | POST | cuerpo: datos personales y parentesco | Backend: Administrator | Consulta o modificación indebida de datos | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L88) `create_representative` |
+| A-33 | API: get_all_representatives | `/api/v1/representatives/all` | GET | query: page, limit, search | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L116) `get_all_representatives` |
+| A-34 | API: get_representative_by_id | `/api/v1/representatives/{representative_id}` | GET | ruta: representative_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L144) `get_representative_by_id` |
+| A-35 | API: update_representative | `/api/v1/representatives/update/{representative_id}` | PUT | ruta: representative_id; cuerpo: datos modificables del representante | Backend: Administrator | Consulta o modificación indebida de datos | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L172) `update_representative` |
+| A-36 | API: deactivate_representative | `/api/v1/representatives/deactivate/{representative_id}` | PATCH | ruta: representative_id | Backend: Administrator | Consulta o modificación indebida de datos | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L201) `deactivate_representative` |
+| A-37 | API: activate_representative | `/api/v1/representatives/activate/{representative_id}` | PATCH | ruta: representative_id | Backend: Administrator | Consulta o modificación indebida de datos | [representative_router.py](../../../BackendFutbol/app/services/routers/representative_router.py#L229) `activate_representative` |
+| A-38 | API: create_sprint_test | `/api/v1/sprint-tests/` | POST | cuerpo: evaluation_id, athlete_id, date, distance_meters, time_0_10_s, time_0_30_s, observations | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [sprint_test_router.py](../../../BackendFutbol/app/services/routers/sprint_test_router.py#L32) `create_sprint_test` |
+| A-39 | API: list_sprint_tests | `/api/v1/sprint-tests/` | GET | query: page, limit, evaluation_id, athlete_id, search | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [sprint_test_router.py](../../../BackendFutbol/app/services/routers/sprint_test_router.py#L62) `list_sprint_tests` |
+| A-40 | API: get_sprint_test | `/api/v1/sprint-tests/{test_id}` | GET | ruta: test_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [sprint_test_router.py](../../../BackendFutbol/app/services/routers/sprint_test_router.py#L92) `get_sprint_test` |
+| A-41 | API: update_sprint_test | `/api/v1/sprint-tests/{test_id}` | PATCH | ruta: test_id; cuerpo: campos modificables del test | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [sprint_test_router.py](../../../BackendFutbol/app/services/routers/sprint_test_router.py#L125) `update_sprint_test` |
+| A-42 | API: delete_sprint_test | `/api/v1/sprint-tests/{test_id}` | DELETE | ruta: test_id | Backend: Autenticado, sin filtro de rol | Eliminación indebida de registros | [sprint_test_router.py](../../../BackendFutbol/app/services/routers/sprint_test_router.py#L166) `delete_sprint_test` |
+| A-43 | API: get_club_overview | `/api/v1/statistics/overview` | GET | query: type_athlete, sex | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [statistic_router.py](../../../BackendFutbol/app/services/routers/statistic_router.py#L37) `get_club_overview` |
+| A-44 | API: get_attendance_statistics | `/api/v1/statistics/attendance` | GET | query: start_date; query: end_date; query: type_athlete; query: sex | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [statistic_router.py](../../../BackendFutbol/app/services/routers/statistic_router.py#L72) `get_attendance_statistics` |
+| A-45 | API: get_test_performance | `/api/v1/statistics/tests` | GET | query: start_date; query: end_date; query: type_athlete | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [statistic_router.py](../../../BackendFutbol/app/services/routers/statistic_router.py#L113) `get_test_performance` |
+| A-46 | API: get_athlete_individual_stats | `/api/v1/statistics/athlete/{athlete_id}` | GET | ruta: athlete_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [statistic_router.py](../../../BackendFutbol/app/services/routers/statistic_router.py#L152) `get_athlete_individual_stats` |
+| A-47 | API: update_sports_stats | `/api/v1/statistics/athlete/{athlete_id}/sports-stats` | PATCH | ruta: athlete_id; cuerpo: matches_played, goals, assists, yellow_cards, red_cards | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [statistic_router.py](../../../BackendFutbol/app/services/routers/statistic_router.py#L196) `update_sports_stats` |
+| A-48 | API: get_athlete_tests_history | `/api/v1/statistics/athlete/{athlete_id}/tests-history` | GET | ruta: athlete_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [statistic_router.py](../../../BackendFutbol/app/services/routers/statistic_router.py#L243) `get_athlete_tests_history` |
+| A-49 | API: create_technical_assessment | `/api/v1/technical-assessments/` | POST | cuerpo: evaluation_id, athlete_id, date, ball_control, short_pass, long_pass, shooting, dribbling, observations | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [technical_assessment_router.py](../../../BackendFutbol/app/services/routers/technical_assessment_router.py#L34) `create_technical_assessment` |
+| A-50 | API: list_technical_assessments | `/api/v1/technical-assessments/` | GET | query: page, limit, evaluation_id, athlete_id, search | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [technical_assessment_router.py](../../../BackendFutbol/app/services/routers/technical_assessment_router.py#L64) `list_technical_assessments` |
+| A-51 | API: get_technical_assessment | `/api/v1/technical-assessments/{test_id}` | GET | ruta: test_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [technical_assessment_router.py](../../../BackendFutbol/app/services/routers/technical_assessment_router.py#L96) `get_technical_assessment` |
+| A-52 | API: update_technical_assessment | `/api/v1/technical-assessments/{test_id}` | PATCH | ruta: test_id; cuerpo: campos modificables del test | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [technical_assessment_router.py](../../../BackendFutbol/app/services/routers/technical_assessment_router.py#L131) `update_technical_assessment` |
+| A-53 | API: delete_technical_assessment | `/api/v1/technical-assessments/{test_id}` | DELETE | ruta: test_id | Backend: Autenticado, sin filtro de rol | Eliminación indebida de registros | [technical_assessment_router.py](../../../BackendFutbol/app/services/routers/technical_assessment_router.py#L174) `delete_technical_assessment` |
+| A-54 | API: admin_create_user | `/api/v1/users/create` | POST | cuerpo: datos personales, email, role, password | Backend: Administrator | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L53) `admin_create_user` |
+| A-55 | API: admin_update_user | `/api/v1/users/update/{user_id}` | PUT | ruta: user_id; cuerpo: datos personales | Backend: Administrator | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L95) `admin_update_user` |
+| A-56 | API: get_all_users | `/api/v1/users/all` | GET | query: page, limit, search, role, is_active | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L129) `get_all_users` |
+| A-57 | API: get_me | `/api/v1/users/me` | GET | — | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L160) `get_me` |
+| A-58 | API: get_all_interns | `/api/v1/users/interns` | GET | query: page, limit, search | Backend: Administrator/Coach | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L198) `get_all_interns` |
+| A-59 | API: get_by_id | `/api/v1/users/{user_id}` | GET | ruta: user_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L230) `get_by_id` |
+| A-60 | API: desactivate_user | `/api/v1/users/desactivate/{user_id}` | PATCH | ruta: user_id | Backend: Administrator | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L267) `desactivate_user` |
+| A-61 | API: activate_user | `/api/v1/users/activate/{user_id}` | PATCH | ruta: user_id | Backend: Administrator | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L293) `activate_user` |
+| A-62 | API: promote_athlete_to_intern | `/api/v1/users/promote-athlete/{athlete_id}` | POST | ruta: athlete_id; cuerpo: email, password | Backend: Administrator/Coach | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L324) `promote_athlete_to_intern` |
+| A-63 | API: deactivate_intern | `/api/v1/users/interns/{intern_id}/deactivate` | PATCH | ruta: intern_id | Backend: Administrator/Coach | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L355) `deactivate_intern` |
+| A-64 | API: activate_intern | `/api/v1/users/interns/{intern_id}/activate` | PATCH | ruta: intern_id | Backend: Administrator/Coach | Consulta o modificación indebida de datos | [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py#L381) `activate_intern` |
+| A-65 | API: create_yoyo_test | `/api/v1/yoyo-tests/` | POST | cuerpo: evaluation_id, athlete_id, date, shuttle_count, final_level, failures, observations | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [yoyo_test_router.py](../../../BackendFutbol/app/services/routers/yoyo_test_router.py#L32) `create_yoyo_test` |
+| A-66 | API: list_yoyo_tests | `/api/v1/yoyo-tests/` | GET | query: page, limit, evaluation_id, athlete_id, search | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [yoyo_test_router.py](../../../BackendFutbol/app/services/routers/yoyo_test_router.py#L62) `list_yoyo_tests` |
+| A-67 | API: get_yoyo_test | `/api/v1/yoyo-tests/{test_id}` | GET | ruta: test_id | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [yoyo_test_router.py](../../../BackendFutbol/app/services/routers/yoyo_test_router.py#L92) `get_yoyo_test` |
+| A-68 | API: update_yoyo_test | `/api/v1/yoyo-tests/{test_id}` | PATCH | ruta: test_id; cuerpo: campos modificables del test | Backend: Autenticado, sin filtro de rol | Consulta o modificación indebida de datos | [yoyo_test_router.py](../../../BackendFutbol/app/services/routers/yoyo_test_router.py#L125) `update_yoyo_test` |
+| A-69 | API: delete_yoyo_test | `/api/v1/yoyo-tests/{test_id}` | DELETE | ruta: test_id | Backend: Autenticado, sin filtro de rol | Eliminación indebida de registros | [yoyo_test_router.py](../../../BackendFutbol/app/services/routers/yoyo_test_router.py#L166) `delete_yoyo_test` |
+| D-01 | API/documentación: Raíz API | `/` | GET | redirección a /scalar | Backend: Público | Exposición de documentación | [main.py](../../../BackendFutbol/main.py#L153) |
+| D-02 | API/documentación: Salud DB | `/health` | GET | — | Backend: Público | Divulgación de estado | [main.py](../../../BackendFutbol/main.py#L157) |
+| D-03 | API/documentación: Vida | `/health/live` | GET | — | Backend: Público | Abuso de sondeo | [main.py](../../../BackendFutbol/main.py#L193) |
+| D-04 | API/documentación: Preparación | `/health/ready` | GET | — | Backend: Público | Divulgación de estado | [main.py](../../../BackendFutbol/main.py#L198) |
+| D-05 | API/documentación: Información | `/info` | GET | — | Backend: Público | Divulgación de metadatos | [main.py](../../../BackendFutbol/main.py#L215) |
+| D-06 | API/documentación: Swagger UI | `/docs` | GET | — | Backend: Público | Enumeración de API | [main.py](../../../BackendFutbol/main.py#L245) |
+| D-07 | API/documentación: ReDoc | `/redoc` | GET | — | Backend: Público | Enumeración de API | [main.py](../../../BackendFutbol/main.py#L246) |
+| D-08 | API/documentación: OpenAPI | `/openapi.json` | GET | — | Backend: Público | Enumeración de API | [main.py](../../../BackendFutbol/main.py#L247) |
+| D-09 | API/documentación: Scalar | `/scalar` | GET | — | Backend: Público | Enumeración de API | [scalar_docs.py](../../../BackendFutbol/app/core/scalar_docs.py#L8) |
+| S-01 | Docker: Frontend Nginx | `5173:80` (anfitrión:contenedor) | TCP | Conexiones al puerto publicado | Depende del servicio | Acceso de red no previsto; confirmar interfaces y firewall | [docker-compose.yml](../../../docker-compose.yml) |
+| S-02 | Docker: FastAPI | `8001:8000` (anfitrión:contenedor) | TCP | Conexiones al puerto publicado | Depende del servicio | Acceso de red no previsto; confirmar interfaces y firewall | [docker-compose.yml](../../../docker-compose.yml) |
+| S-03 | Docker: PostgreSQL | `5432:5432` (anfitrión:contenedor) | TCP | Conexiones al puerto publicado | Depende del servicio | Acceso de red no previsto; confirmar interfaces y firewall | [docker-compose.yml](../../../docker-compose.yml) |
+| S-04 | Docker: MariaDB | `3306:3306` (anfitrión:contenedor) | TCP | Conexiones al puerto publicado | Depende del servicio | Acceso de red no previsto; confirmar interfaces y firewall | [docker-compose.yml](../../../docker-compose.yml) |
+| S-05 | Docker: Servicio de personas Spring Boot | `8096:8096` (anfitrión:contenedor) | TCP | Conexiones al puerto publicado | Depende del servicio | Acceso de red no previsto; confirmar interfaces y firewall | [docker-compose.yml](../../../docker-compose.yml) |
+
+**Servicio auxiliar:** `person-ms-init` se ejecuta como tarea de inicialización sin puerto publicado; consta en `docker-compose.yml`. La imagen de Spring Boot se consume como dependencia; su código y rutas internas no están en este repositorio. El cliente de FastAPI se revisó en [person_client.py](../../../BackendFutbol/app/client/person_client.py) y [person_ms_service.py](../../../BackendFutbol/app/client/person_ms_service.py).
+
+## Formularios y parámetros de navegador
+
+| Formulario | Entradas principales confirmadas | Evidencia |
+|---|---|---|
+| Inicio y recuperación | correo, contraseña; recuperación por correo; nueva contraseña y token del enlace | [LoginForm.jsx](../../../FrontendFutbol/src/features/auth/components/LoginForm.jsx), [ForgotPasswordPage.jsx](../../../FrontendFutbol/src/features/auth/pages/ForgotPasswordPage.jsx), [ResetPasswordPage.jsx](../../../FrontendFutbol/src/features/auth/pages/ResetPasswordPage.jsx) |
+| Registro público club/escuela | nombre, apellido, fecha de nacimiento, sexo, identificación, DNI, teléfono, estamento, dirección, talla y peso; para menor: DNI, nombre, parentesco, contacto y dirección del representante | [DeportistaForm.jsx](../../../FrontendFutbol/src/features/inscription/components/DeportistaForm.jsx), [RepresentanteForm.jsx](../../../FrontendFutbol/src/features/inscription/components/RepresentanteForm.jsx), [RegisterSchoolPage.jsx](../../../FrontendFutbol/src/features/registration/pages/RegisterSchoolPage.jsx) |
+| Usuarios y pasantes | identidad, contacto, correo, rol y contraseña; promoción de atleta a pasante con correo y contraseña | [UserForm.jsx](../../../FrontendFutbol/src/features/users/components/UserForm.jsx), [PromoteAthleteModal.jsx](../../../FrontendFutbol/src/features/athletes/components/PromoteAthleteModal.jsx) |
+| Seguimiento | fecha, búsqueda, presente/ausente y justificación; nombre, fecha, hora, lugar y observaciones de evaluación; resultados y observaciones de pruebas de velocidad, resistencia, YoYo y técnica | [AttendancePage.jsx](../../../FrontendFutbol/src/features/seguimiento/pages/AttendancePage.jsx), [EvaluationForm.jsx](../../../FrontendFutbol/src/features/seguimiento/components/EvaluationComponents/EvaluationForm.jsx), [tests](../../../FrontendFutbol/src/features/seguimiento/components/tests/) |
+| Estadísticas y reportes | filtros por fecha, tipo de deportista, sexo; reportes por tipo, formato y deportista | [StatisticsPage.jsx](../../../FrontendFutbol/src/features/seguimiento/pages/StatisticsPage.jsx), [ReportsPage.jsx](../../../FrontendFutbol/src/features/seguimiento/pages/ReportsPage.jsx) |
+
+## Diferencias y límites observados
+
+- React muestra reportes al pasante, pero `validate_report_permissions` de FastAPI permite generarlos solo a Administrator y Coach.
+- React restringe la gestión de deportistas a Administrator y Coach; varios endpoints de atletas requieren únicamente `get_current_account`. En representantes, crear/editar/activar/desactivar sí exige Administrator, mientras que buscar por DNI es público.
+- Los permisos declarados en `roles.js` son configuración de interfaz. Por ejemplo, allí Coach e Intern no tienen permiso de eliminar evaluaciones, pero `DELETE /api/v1/evaluations/{evaluation_id}` exige solo `get_current_account`; lo mismo ocurre con los DELETE de pruebas. `GET /api/v1/users/all` también exige solo autenticación aunque React muestra usuarios únicamente a Administrator. Los routers FastAPI son la evidencia de autorización por operación. `ROUTES.SETTINGS` y `/seguimiento` son constantes sin `<Route>` propia en `AppRouter`; `/tests` tiene router vacío. No se inventarían como endpoints activos.
+- `constants.js` declara `/accounts/logout` y el cliente de usuarios envía `PATCH /users/{id}` en una función, pero no hay decoradores coincidentes en los routers. Deben contrastarse en ejecución como posibles inconsistencias del cliente, no listarse como endpoints reales.
+- Los routers de pruebas usan rutas con `/` final para colección; el cliente usa la ruta sin barra. FastAPI puede redirigir; no se comprobó en ejecución.
+- `ALLOWED_ORIGINS` tiene valor predeterminado amplio en configuración y Compose publica puertos sin enlace explícito a loopback. La exposición efectiva depende del entorno y queda pendiente de verificación.
+
+## Evidencias pendientes de ejecución
+
+Registrar manualmente las capturas enumeradas en [evidencias/README.md](evidencias/README.md): inicio de sesión, registro público, usuarios, deportistas, asistencia, evaluaciones, Swagger, estado de Docker y solicitudes en Network. Usar únicamente cuentas de prueba autorizadas y ocultar datos personales, contraseñas, cookies y tokens. En esta revisión no se ejecutó la aplicación ni se capturaron pantallas.

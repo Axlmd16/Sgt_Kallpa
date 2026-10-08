@@ -1,127 +1,55 @@
-# Ficha de identificación del proyecto
+# Ficha de identificación y alcance — Fase 1
 
-**Asignatura:** Software Security  
- **Práctica:** APE 01 – Análisis y superficie de ataque del proyecto  
- **Fase:** 1 – Selección de la aplicación objetivo  
- **Proyecto:** Kallpa UNL  
- **Repositorio:** [https://github.com/Axlmd16/Sgt_Kallpa](https://github.com/Axlmd16/Sgt_Kallpa)  
- **Integrantes:**
+**Asignatura:** Software Security, Universidad Nacional de Loja
+**Práctica:** APE 01 · sesiones del 1 y 2 de octubre de 2026
+**Proyecto:** Sgt_Kallpa (Kallpa UNL), sistema web de gestión deportiva
+**Repositorio:** https://github.com/Axlmd16/Sgt_Kallpa
+**Integrantes consignados en la documentación previa:** Jostin Santiago Jimenez Ulloa; Jhostin Alexander Tapia Marquez; Elias Sebastian Poma Granda.
 
-- Jostin Santiago Jimenez Ulloa
-- Jhostin Alexander Tapia Marquez
-- Elias Sebastian Poma Granda
-  **Fecha:** 1 y 2 de octubre de 2026
+## Finalidad y funciones
 
-## 1. Nombre del proyecto
+La aplicación organiza inscripciones del club y escuela de fútbol, con datos de deportistas y, para menores, de representantes. El personal autenticado administra usuarios, deportistas y pasantes; registra asistencia; crea evaluaciones y pruebas físicas o técnicas; consulta estadísticas y genera reportes PDF, XLSX o CSV. La interfaz pública incluye portada, elección de inscripción, registro de club/escuela, inicio de sesión y recuperación de contraseña. Evidencia: [AppRouter.jsx](../../../FrontendFutbol/src/app/router/AppRouter.jsx), [routers](../../../BackendFutbol/app/services/routers/) y [report_router.py](../../../BackendFutbol/app/services/routers/report_router.py).
 
-Kallpa UNL – Sistema de Gestión Deportiva.
+## Usuarios, roles y permisos observados
 
-## 2. Descripción del proyecto
+Los valores de rol son `Administrator`, `Coach` e `Intern` ([rol.py](../../../BackendFutbol/app/models/enums/rol.py), [roles.js](../../../FrontendFutbol/src/app/config/roles.js)). Los solicitantes de inscripción pública no son un rol autenticado.
 
-Kallpa UNL es una aplicación web desarrollada para apoyar la gestión administrativa y deportiva del Club de Fútbol Kallpa de la Universidad Nacional de Loja.
+| Actor | Navegación React | Autorización FastAPI comprobada en código |
+|---|---|---|
+| Público | Portada, registro de club/escuela, login y recuperación | Login, recuperación y renovación de token; inscripción de deportistas y menores; consulta de representante por DNI |
+| Administrator | Usuarios, deportistas, asistencia, evaluaciones, estadísticas, reportes y perfil | Crear/editar/activar/desactivar usuarios y representantes; operaciones autenticadas de seguimiento y deportistas; reportes |
+| Coach | Deportistas, seguimiento, reportes y perfil | Puede listar y gestionar pasantes, operaciones autenticadas de deportistas/seguimiento y generar reportes; no tiene dependencia de administrador en usuarios |
+| Intern | Seguimiento, reportes y perfil; sin rutas React de usuarios/deportistas | Puede invocar endpoints que solo usan `get_current_account`, incluidos varios de atletas, evaluaciones, pruebas, asistencia y estadísticas; el backend le niega la generación de reportes |
 
-El sistema centraliza el registro de deportistas y representantes, la administración de usuarios, el control de asistencias, las evaluaciones físicas, las estadísticas deportivas y la generación de reportes.
+`ProtectedRoute` solo verifica la presencia de un token local y `RoleRoute` usa el rol guardado en `localStorage`. Las restricciones efectivas de API dependen de `get_current_account`, `get_current_admin`, `get_current_coach_or_admin` y `validate_report_permissions` ([security.py](../../../BackendFutbol/app/utils/security.py), [user_router.py](../../../BackendFutbol/app/services/routers/user_router.py), [report_router.py](../../../BackendFutbol/app/services/routers/report_router.py)). Por ello, la interfaz y la API no tienen siempre el mismo alcance: React muestra reportes a `Intern`, pero la generación en FastAPI admite únicamente `Administrator` y `Coach`; React restringe deportistas a los dos primeros roles, mientras varios endpoints de atletas solo exigen autenticación. La eliminación de evaluaciones y pruebas también exige solo autenticación en FastAPI, aunque `roles.js` declara esa acción deshabilitada para Coach e Intern. Son diferencias de implementación, no resultados de explotación.
 
-La aplicación cuenta con diferentes roles de usuario, lo que permite asignar funcionalidades y permisos según las responsabilidades de cada persona dentro del sistema.
+## Tecnologías y arquitectura
 
-## 3. Funcionalidades principales
+| Componente | Implementación confirmada |
+|---|---|
+| Cliente | React 19, Vite 7, React Router, Axios, React Hook Form y Tailwind CSS 4 ([package.json](../../../FrontendFutbol/package.json)) |
+| API | Python con FastAPI, Pydantic y SQLAlchemy ([pyproject.toml](../../../BackendFutbol/pyproject.toml), [main.py](../../../BackendFutbol/main.py)) |
+| Identidad | Contraseñas con bcrypt y tokens JWT de acceso/refresco; cliente guarda tokens en `localStorage` ([security.py](../../../BackendFutbol/app/utils/security.py), [http.js](../../../FrontendFutbol/src/app/config/http.js)) |
+| Persistencia | PostgreSQL 16 para FastAPI; MariaDB 11 para el servicio de personas ([docker-compose.yml](../../../docker-compose.yml)) |
+| Servicio integrado | Imagen Docker de aplicación Spring Boot para personas; FastAPI se comunica mediante `PersonClient`. Su código fuente no consta en este repositorio ([person_client.py](../../../BackendFutbol/app/client/person_client.py)) |
+| Despliegue local | Docker Compose; cliente Vite compilado y servido por Nginx ([FrontendFutbol/Dockerfile](../../../FrontendFutbol/Dockerfile), [BackendFutbol/Dockerfile](../../../BackendFutbol/Dockerfile)) |
 
-- Autenticación de usuarios y recuperación de contraseñas.
-- Administración de usuarios del sistema.
-- Registro e inscripción de deportistas y representantes.
-- Consulta y actualización de información de deportistas.
-- Registro y seguimiento de asistencias.
-- Gestión de evaluaciones físicas y técnicas.
-- Consulta de estadísticas deportivas.
-- Generación y exportación de reportes en PDF, Excel y CSV.
-- Gestión del perfil de usuario y cambio de contraseña.
+El navegador llama a la API FastAPI bajo `/api/v1`. FastAPI gestiona cuentas, deportistas y seguimiento en PostgreSQL y usa el servicio de personas para datos de identidad asociados, almacenados por este en MariaDB. El backend registra routers en `main.py`; los controladores, esquemas y modelos se hallan en `BackendFutbol/app/`. La documentación HTTP se configura en `/docs`, `/redoc`, `/scalar` y `/openapi.json`.
 
-## 4. Usuarios y roles
+## Entorno local declarado
 
-El sistema contempla tres roles de acceso autenticado:
+| Servicio | Puerto del anfitrión → contenedor |
+|---|---|
+| Frontend Nginx | `5173 → 80` |
+| FastAPI | `8001 → 8000` |
+| PostgreSQL | `5432 → 5432` |
+| MariaDB | `3306 → 3306` |
+| Spring Boot (personas) | `8096 → 8096` |
 
-**Administrador (Administrator):** Tiene acceso a la administración de usuarios, gestión de inscripciones, evaluaciones, asistencias, estadísticas, reportes y funcionalidades de configuración autorizadas.
+`person-ms-init` es una tarea auxiliar sin puerto publicado. La URL de API compilada por defecto en Docker es `http://localhost:8001/api/v1`; fuera de Docker, `http.js` usa `http://localhost:8000/api/v1` si no se define `VITE_API_URL`. Estas son configuraciones, no prueba de servicios activos. Evidencia: [docker-compose.yml](../../../docker-compose.yml), [http.js](../../../FrontendFutbol/src/app/config/http.js).
 
-**Entrenador (Coach):** Puede gestionar inscripciones, registrar y modificar evaluaciones, controlar asistencias, consultar estadísticas y generar reportes. No dispone de permisos para administrar usuarios ni eliminar evaluaciones según la configuración de roles.
+## Delimitación y justificación
 
-**Pasante (Intern):** Puede acceder a las funcionalidades de seguimiento habilitadas, entre ellas el registro de asistencia, evaluaciones, estadísticas y reportes. Tiene restricciones sobre la gestión de usuarios e inscripciones.
+El alcance de las sesiones del 1, 2 y 8 de octubre comprende identificación del proyecto, componentes, rutas, formularios, servicios, activos, clasificación CIA y escenarios de amenaza preliminares. Se analizó código y configuración local; no se ejecutaron pruebas dinámicas, ni se verificaron cuentas, datos reales, disponibilidad de contenedores o respuestas HTTP. La imagen externa de Spring Boot queda limitada a la integración y configuración visible. La guía PDF indicada en la tarea no se encontró en el entorno.
 
-Además, la aplicación dispone de formularios públicos de inscripción para deportistas y representantes.
-
-Estos permisos corresponden a la configuración del frontend y deberán contrastarse con los controles del backend durante la auditoría.
-
-## 5. Tecnologías empleadas
-
-| Componente                             | Tecnología              |
-| -------------------------------------- | ----------------------- |
-| Frontend                               | React 19, Vite 7        |
-| Backend                                | Python 3.11+, FastAPI   |
-| Base de datos principal                | PostgreSQL 16           |
-| Servicio de personas                   | Spring Boot             |
-| Base de datos del servicio de personas | MariaDB 11              |
-| Autenticación                          | JSON Web Tokens (JWT)   |
-| Comunicación                           | API REST mediante HTTP  |
-| Contenedores                           | Docker y Docker Compose |
-| Control de versiones                   | Git y GitHub            |
-
-## 6. Arquitectura general
-
-La aplicación utiliza una arquitectura basada en frontend, backend y servicios de persistencia.
-
-El frontend desarrollado con React permite la interacción del usuario mediante el navegador. Las solicitudes son procesadas por el backend FastAPI, el cual implementa la lógica de negocio, la autenticación y la comunicación con PostgreSQL.
-
-Adicionalmente, el backend se integra con un servicio de personas desarrollado en Spring Boot, que utiliza MariaDB para el almacenamiento de su información.
-
-Los componentes se ejecutan localmente mediante Docker Compose.
-
-## 7. Entorno de ejecución
-
-La aplicación se ejecuta en un entorno local utilizando Docker Compose.
-
-| Servicio             | Dirección o puerto                                           |
-| -------------------- | ------------------------------------------------------------ |
-| Frontend             | [http://localhost:5173](http://localhost:5173/)              |
-| Backend              | [http://localhost:8001](http://localhost:8001/)              |
-| API REST             | [http://localhost:8001/api/v1](http://localhost:8001/api/v1) |
-| Swagger UI           | [http://localhost:8001/docs](http://localhost:8001/docs)     |
-| PostgreSQL           | 5432                                                         |
-| Servicio de personas | 8096                                                         |
-| MariaDB              | 3306                                                         |
-
-**Estado del entorno:** [Registrar el resultado real de `docker compose ps`].
-
-## 8. Alcance de la auditoría
-
-La auditoría de seguridad se realizará sobre la instalación local del proyecto Kallpa UNL.
-
-Se analizarán los siguientes componentes:
-
-- Mecanismos de autenticación y recuperación de contraseñas.
-- Controles de acceso según los roles del sistema.
-- Formularios de registro e inscripción.
-- Funcionalidades de administración y seguimiento deportivo.
-- Endpoints disponibles en la API REST.
-- Validación de datos recibidos desde el frontend.
-- Gestión y exposición de datos personales.
-- Configuración y exposición de los servicios desplegados mediante Docker.
-- Manejo de errores y excepciones.
-
-La evaluación del servicio externo de personas se limitará inicialmente a su integración, los servicios expuestos y las configuraciones disponibles. No se incluye una auditoría interna de código de terceros que no esté disponible.
-
-Todas las pruebas se realizarán exclusivamente en el entorno local autorizado, utilizando cuentas y datos ficticios.
-
-## 9. Justificación de la selección
-
-Se seleccionó Kallpa UNL porque es un proyecto de software con código fuente disponible, ejecutable localmente y que incorpora autenticación, distintos roles, bases de datos y múltiples funcionalidades web.
-
-Estas características permiten identificar superficies de ataque, analizar activos de información y evaluar mecanismos de seguridad sobre una aplicación funcional.
-
-Además, el sistema administra información de deportistas y representantes, por lo que la confidencialidad, integridad y disponibilidad de los datos constituyen aspectos relevantes para su evaluación.
-
-## 10. Conclusión
-
-Kallpa UNL reúne las características necesarias para servir como aplicación objetivo de la práctica de Software Security.
-
-Su arquitectura, funcionalidades y tratamiento de información permiten desarrollar un proceso de análisis de seguridad progresivo, comenzando por la identificación de su superficie de ataque y los activos de información.
-
-La auditoría continuará con el análisis de amenazas, la gestión de errores y la evaluación de riesgos conforme al OWASP Top 10.
+Sgt_Kallpa es pertinente porque combina entrada pública de datos personales, roles, autenticación, API, dos bases de datos y un servicio integrado. Esto permite estudiar superficies y activos concretos sin recurrir a supuestos genéricos. El [inventario](inventario-superficie.md) y la [matriz CIA](../Fase-02/matriz-activos-amenazas.md) documentan las observaciones correspondientes. Las amenazas allí descritas requieren comprobación posterior y no constituyen hallazgos confirmados.
