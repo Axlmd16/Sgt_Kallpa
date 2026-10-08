@@ -6,10 +6,11 @@
  **Proyecto:** Kallpa UNL  
  **Repositorio:** [https://github.com/Axlmd16/Sgt_Kallpa](https://github.com/Axlmd16/Sgt_Kallpa)  
  **Integrantes:**
- - Jostin Santiago Jimenez Ulloa
- - Jhostin Alexander Tapia Marquez
- - Elias Sebastian Poma Granda
- **Fecha:** 1 y 2 de octubre de 2026
+
+- Jostin Santiago Jimenez Ulloa
+- Jhostin Alexander Tapia Marquez
+- Elias Sebastian Poma Granda
+  **Fecha:** 1 y 2 de octubre de 2026
 
 ## 1. Nombre del proyecto
 
