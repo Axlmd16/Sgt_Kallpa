@@ -1,0 +1,65 @@
+# Ejecutado el 2026-10-30 05:39
+
+## PostgreSQL (backend Kallpa) - tabla accounts
+                                        Table "public.accounts"
+    Column     |           Type           | Collation | Nullable |               Default                
+---------------+--------------------------+-----------+----------+--------------------------------------
+ email         | character varying(255)   |           | not null | 
+ password_hash | character varying(255)   |           | not null | 
+ role          | role_enum                |           | not null | 
+ user_id       | integer                  |           | not null | 
+ id            | integer                  |           | not null | nextval('accounts_id_seq'::regclass)
+ created_at    | timestamp with time zone |           | not null | now()
+ updated_at    | timestamp with time zone |           |          | 
+ is_active     | boolean                  |           | not null | 
+Indexes:
+    "accounts_pkey" PRIMARY KEY, btree (id)
+ id |  email_anonimizado   |     role      | algoritmo_coste |          salt          | largo 
+----+----------------------+---------------+-----------------+------------------------+-------
+  1 | usuario1@ejemplo.com | ADMINISTRATOR | $2b$10$         | E8y3nH7RBX/GNZopQSXLju |    60
+  2 | usuario2@ejemplo.com | ADMINISTRATOR | $2b$10$         | 7qF5uQi3zdkj4X/KktcZru |    60
+  3 | usuario3@ejemplo.com | COACH         | $2b$10$         | WjWwMDATiwtI6gfWrbyM/u |    60
+(3 rows)
+
+ total | hashes_distintos | salts_distintos | bcrypt_coste_10 
+-------+------------------+-----------------+-----------------
+     3 |                3 |               3 |               3
+(1 row)
+
+
+## MariaDB (microservicio de personas) - tabla accounts
+Field	Type	Null	Key	Default	Extra
+id	int(11)	NO	PRI	NULL	
+email	varchar(100)	YES	UNI	NULL	
+external_id	varchar(60)	YES		NULL	
+password	varchar(150)	YES		NULL	
+state	bit(1)	YES		NULL	
+id_persona	int(11)	NO	UNI	NULL	
+id	email_anonimizado	inicio	largo
+1	persona1@ejemplo.com	Rhm7	24
+2	persona2@ejemplo.com	xwzV	24
+3	persona3@ejemplo.com	cgNc	24
+4	persona4@ejemplo.com	A08R	24
+5	persona5@ejemplo.com	odoR	24
+total	distintos	largo_min	largo_max
+85	85	24	24
+
+## Clave del microservicio dentro de la imagen (app.jar)
+spring.datasource.password=desarrollo
+others.key=<REDACTADO: mismo valor por defecto de OTHERS_KEY en docker-compose.yml:63>
+Algoritmo usado por AESUtil.class:
+AES decrypt encrypt (Cipher.getInstance("AES") en Java = AES/ECB/PKCS5Padding)
+
+## Prueba de reversibilidad: SOLO la cuenta de servicio admin@admin.com
+## (su contraseña ya es pública en BackendFutbol/.env.example)
+admin@admin.com -> 12345678
+
+## Alcance: cuántas contraseñas se pueden descifrar (sin mostrarlas)
+descifrables=85 no_descifrables=0
+
+## Exposición en red: conexión a las bases usando la IP de la red local
+IP del equipo en la red local: 192.168.110.229
+kallpa-postgres -> 0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+mariadb-db -> 0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp
+PostgreSQL con credenciales por defecto: 3 cuentas
+MariaDB con credenciales por defecto: 85 cuentas

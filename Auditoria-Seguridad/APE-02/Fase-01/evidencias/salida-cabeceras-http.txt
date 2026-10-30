@@ -1,0 +1,51 @@
+# Ejecutado el 2026-10-30 01:32
+
+## GET http://localhost:5173/
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+
+## GET http://localhost:5173/login
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+
+## GET http://localhost:5173/favicon.ico
+HTTP/1.1 404 Not Found
+Server: nginx/1.31.6
+
+## GET http://localhost:8001/docs
+HTTP/1.1 200 OK
+server: uvicorn
+
+## GET http://localhost:8096/
+HTTP/1.1 404 
+
+## Resumen de cabeceras de seguridad (frontend /)
+AUSENTE   Strict-Transport-Security
+AUSENTE   Content-Security-Policy
+AUSENTE   X-Frame-Options
+AUSENTE   X-Content-Type-Options
+AUSENTE   Referrer-Policy
+AUSENTE   Permissions-Policy
+
+## ¿Responde algún servicio por HTTPS?
+https://localhost:5173 -> NO responde (solo HTTP)
+https://localhost:8001 -> NO responde (solo HTTP)
+https://localhost:8096 -> NO responde (solo HTTP)
+
+## Login viaja en texto claro por HTTP (cuenta inexistente, contraseña ficticia)
+* using HTTP/1.x
+> POST /api/v1/accounts/login HTTP/1.1
+> Host: localhost:8001
+< HTTP/1.1 401 Unauthorized
+(el cuerpo {"email":...,"password":"ClaveFicticia123!"} se envía sin cifrar)
+
+## Configuración declarada en FrontendFutbol/nginx.conf
+2:    listen 80;
+8:    location / {
+13:    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+15:        add_header Cache-Control "public, immutable";
+19:    location = /index.html {
+21:        add_header Cache-Control "no-store, no-cache, must-revalidate";
+25:    add_header X-Frame-Options "DENY" always;
+26:    add_header X-Content-Type-Options "nosniff" always;
+27:    add_header X-XSS-Protection "1; mode=block" always;

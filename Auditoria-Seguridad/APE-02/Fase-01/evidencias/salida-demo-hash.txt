@@ -1,0 +1,56 @@
+# Ejecutado el 2026-10-30 01:31 con el entorno de kallpa-backend
+
+========================================================================
+1. Hash SIN salt: misma contraseña -> mismo hash
+========================================================================
+md5     ana@unl.edu.ec     b99da7bd04b1dcf2c5d63822d16c160a
+md5     luis@unl.edu.ec    b99da7bd04b1dcf2c5d63822d16c160a
+sha1    ana@unl.edu.ec     6cc08148c52064c4eca7f56bb2f4a006ef3127f6
+sha1    luis@unl.edu.ec    6cc08148c52064c4eca7f56bb2f4a006ef3127f6
+sha256  ana@unl.edu.ec     213d88601800f8b346f309ce968c962933bc9b444474d2815b5c6d9e9d208dbe
+sha256  luis@unl.edu.ec    213d88601800f8b346f309ce968c962933bc9b444474d2815b5c6d9e9d208dbe
+-> Quien vea la tabla sabe que ambos usuarios comparten contraseña.
+
+========================================================================
+2. Hash CON salt por usuario (SHA-256 + salt aleatorio)
+========================================================================
+ana@unl.edu.ec     salt=1193e84f572a2b5f... hash=b8c4c3d807aa1712b3fc0ed7fbb79e69...
+luis@unl.edu.ec    salt=7d034a422dd44270... hash=b2cf88915570eeb62cf07987c8ac81f7...
+-> Hashes distintos, pero SHA-256 sigue siendo muy rápido de probar.
+
+========================================================================
+3. bcrypt del proyecto (salt automático + 10 rondas)
+========================================================================
+ana@unl.edu.ec     $2b$10$oIwWlWVTdlvnfSrtuDl6POIr1wVSyWDLMvzsUZfSLtrGgd8UrF6pW
+                   algoritmo=2b coste=10 salt=oIwWlWVTdlvnfSrtuDl6PO
+luis@unl.edu.ec    $2b$10$rIS54dHbBnLNwOCzdqYoROwtjYrnLN0HDxVpVse1PZz69vlMgTIOa
+                   algoritmo=2b coste=10 salt=rIS54dHbBnLNwOCzdqYoRO
+-> El salt viaja dentro del hash; cada usuario obtiene uno distinto.
+
+========================================================================
+4. Ataque de diccionario contra un hash MD5 sin salt
+========================================================================
+MD5 objetivo b99da7bd04b1dcf2c5d63822d16c160a -> 'Futbol2026!' en 0.021 ms
+
+========================================================================
+5. Velocidad de prueba de contraseñas en este equipo (1 núcleo)
+========================================================================
+MD5                         899,185 intentos/s
+SHA-1                     1,032,851 intentos/s
+SHA-256                   1,030,222 intentos/s
+bcrypt (10 rondas)                9 intentos/s
+
+Tiempo para recorrer un diccionario de 14,000,000 contraseñas:
+MD5                  15.6 s
+SHA-1                13.6 s
+SHA-256              13.6 s
+bcrypt (10 rondas)   416.7 h
+bcrypt es ~96,347 veces más lento que MD5 por intento.
+
+========================================================================
+6. Cifrado reversible del microservicio (AES-ECB, clave por defecto)
+========================================================================
+ana@unl.edu.ec     N3EivrWMd/0xRhzUNZhSEw==
+luis@unl.edu.ec    N3EivrWMd/0xRhzUNZhSEw==
+-> Mismo texto cifrado para la misma contraseña (sin IV ni salt).
+-> Con la clave se recupera el original: N3EivrWMd/0xRhzUNZhSEw== -> 'Futbol2026!'
