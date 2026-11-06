@@ -20,7 +20,7 @@ from app.utils.exceptions import UnauthorizedException, ValidationException
 _pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto",
-    bcrypt__rounds=10,
+    bcrypt__rounds=12,  # 2^12 iteraciones: hashes $2b$12$ (antes 10)
 )
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/accounts/login")
 
