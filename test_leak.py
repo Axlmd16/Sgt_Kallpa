@@ -1,1 +1,0 @@
-DB_PASSWORD = "q8Zt3vKp9WmX2rLc7NfY4hJd"
