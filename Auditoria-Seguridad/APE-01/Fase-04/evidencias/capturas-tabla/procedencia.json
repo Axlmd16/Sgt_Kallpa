@@ -1,0 +1,164 @@
+[
+  {
+    "categoria": "A01",
+    "archivo": "BackendFutbol/app/services/routers/user_router.py",
+    "lineas": [
+      129,
+      135
+    ],
+    "sha256": "be0a10464b7bdb35074d9b0d7ce8225c12d14f4eec361509d81a6e3f8a0d8a35"
+  },
+  {
+    "categoria": "A01",
+    "archivo": "BackendFutbol/app/services/routers/evaluation_router.py",
+    "lineas": [
+      206,
+      213
+    ],
+    "sha256": "2e03dac5b65fd6c12b133169fd6f42c9c35e9e69ae160843fb9c047594fc4a0b"
+  },
+  {
+    "categoria": "A01",
+    "archivo": "BackendFutbol/app/services/routers/representative_router.py",
+    "lineas": [
+      37,
+      49
+    ],
+    "sha256": "709a04d44cba26466b87db5954f1546c4785d6e3be9507586cef35937bbb9d1d"
+  },
+  {
+    "categoria": "A02",
+    "archivo": "BackendFutbol/app/core/config.py",
+    "lineas": [
+      23,
+      29
+    ],
+    "sha256": "87517c22c5050b5169e7730b4866cea7c647bb44d248e46866227c8e7233836c"
+  },
+  {
+    "categoria": "A02",
+    "archivo": "FrontendFutbol/nginx.conf",
+    "lineas": [
+      24,
+      28
+    ],
+    "sha256": "8eaabe591bc5d64d9fd8b56b3c3b4d225b7a7ca066ba052d24ad9340578cc2a0"
+  },
+  {
+    "categoria": "A03",
+    "archivo": "BackendFutbol/Dockerfile",
+    "lineas": [
+      30,
+      37
+    ],
+    "sha256": "d2929305b4f32cfd9c394916769a134256342b9d2e662bdbc37b2d194b5ee170"
+  },
+  {
+    "categoria": "A03",
+    "archivo": "FrontendFutbol/Dockerfile",
+    "lineas": [
+      1,
+      2
+    ],
+    "sha256": "70e18a2c969911cd601a7425bd61b5b55978d0cd1698579c67d2ed8c1f4020d0"
+  },
+  {
+    "categoria": "A03",
+    "archivo": "FrontendFutbol/Dockerfile",
+    "lineas": [
+      22,
+      23
+    ],
+    "sha256": "70e18a2c969911cd601a7425bd61b5b55978d0cd1698579c67d2ed8c1f4020d0"
+  },
+  {
+    "categoria": "A04",
+    "archivo": "BackendFutbol/app/utils/security.py",
+    "lineas": [
+      20,
+      25
+    ],
+    "sha256": "1a0aca8ba30a8590e177be12f90e1120832f5b8fd271568335cfa0f5394750e1"
+  },
+  {
+    "categoria": "A04",
+    "archivo": "FrontendFutbol/src/app/providers/AuthProvider.jsx",
+    "lineas": [
+      79,
+      85
+    ],
+    "sha256": "adbbf4df6db483e0b533eb0f9229c89e47e77ced0da3275ce381a0202824cb8f"
+  },
+  {
+    "categoria": "A05",
+    "archivo": "BackendFutbol/app/dao/account_dao.py",
+    "lineas": [
+      30,
+      40
+    ],
+    "sha256": "eec2ec632f578c6961f13dca83567274d3e8ccf618b523be9bb3aeeb21c3e808"
+  },
+  {
+    "categoria": "A05",
+    "archivo": "BackendFutbol/app/dao/user_dao.py",
+    "lineas": [
+      49,
+      59
+    ],
+    "sha256": "ddf898ea5442582c2535f71b9faaf237d4ed4f9e28855a33f7b724c2586e6fca"
+  },
+  {
+    "categoria": "A08",
+    "archivo": "BackendFutbol/app/utils/security.py",
+    "lineas": [
+      194,
+      201
+    ],
+    "sha256": "1a0aca8ba30a8590e177be12f90e1120832f5b8fd271568335cfa0f5394750e1"
+  },
+  {
+    "categoria": "A08",
+    "archivo": "BackendFutbol/Dockerfile",
+    "lineas": [
+      30,
+      37
+    ],
+    "sha256": "d2929305b4f32cfd9c394916769a134256342b9d2e662bdbc37b2d194b5ee170"
+  },
+  {
+    "categoria": "A10",
+    "archivo": "BackendFutbol/app/services/routers/constants.py",
+    "lineas": [
+      17,
+      28
+    ],
+    "sha256": "b32c8f1367f06aa5488e8960297f6fc0158f4905893f414535572e8ff4bd49d1"
+  },
+  {
+    "categoria": "A10",
+    "archivo": "BackendFutbol/main.py",
+    "lineas": [
+      215,
+      223
+    ],
+    "sha256": "fd05a7d59a4637010c09ecf532eddb3fe730eb75aca2be39854177d744bc1a6e"
+  },
+  {
+    "categoria": "A06",
+    "origen": "Imagen incrustada en la guía Word aportada",
+    "imagen_original": "image4.png",
+    "tipo": "captura previa sin modificar"
+  },
+  {
+    "categoria": "A07",
+    "origen": "Imagen incrustada en la guía Word aportada",
+    "imagen_original": "image2.png",
+    "tipo": "captura previa sin modificar"
+  },
+  {
+    "categoria": "A09",
+    "origen": "Imagen incrustada en la guía Word aportada",
+    "imagen_original": "image5.png",
+    "tipo": "captura previa sin modificar"
+  }
+]

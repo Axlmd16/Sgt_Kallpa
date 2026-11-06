@@ -1,5 +1,7 @@
 # APE 01 — Análisis y superficie de ataque del proyecto
 
+**Actualización del 22 de octubre de 2026:** disponible la [Fase 4 con lista de cotejo OWASP Top 10:2025](Fase-04/README.md), su [matriz de priorización](Fase-04/matriz-priorizacion.md) y el [registro de evidencias estáticas](Fase-04/evidencias/registro.md). Se revisó la guía Word aportada y se diferenciaron controles comprobados en código, pruebas comunicadas y verificaciones pendientes. El corte anterior que sigue se conserva como antecedente; no acredita la finalización de la Fase 3.
+
 **Asignatura:** Software Security · Universidad Nacional de Loja
 **Proyecto:** [Sgt_Kallpa / Kallpa UNL](https://github.com/Axlmd16/Sgt_Kallpa) · sistema web de gestión deportiva
 **Corte:** sesiones del 1, 2, 8 y actividad 1 del 9 de octubre de 2026.
