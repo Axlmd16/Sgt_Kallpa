@@ -1,0 +1,60 @@
+# Ejecutado el 2026-11-12 10:16 contra http://localhost:8001/api/v1
+
+## 1. Inicio de sesión (POST /accounts/login)
+{
+  "status": "success",
+  "message": "Inicio de sesión exitoso",
+  "campos_de_data": [
+    "access_token",
+    "expires_in",
+    "refresh_expires_in",
+    "refresh_token",
+    "token_type"
+  ],
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "refresh_expires_in": 604800
+}
+
+## 2. Token de acceso decodificado
+cabecera: {"alg": "HS256", "typ": "JWT"}
+payload : {"sub": "6", "iat": 1794496591, "exp": 1794500191, "role": "Coach", "email": "auditoria.coach@ejemplo.com", "full_name": "Auditoria Entrenador"}
+firma   : a7E0iACGIT... (43 caracteres)
+emitido : 2026-11-12 15:16:31 UTC
+expira  : 2026-11-12 16:16:31 UTC
+vigencia: 3600 segundos = 1.0 horas
+claims  : sub, iat, exp, role, email, full_name
+
+## 3. Token de renovación (refresh) decodificado
+cabecera: {"alg": "HS256", "typ": "JWT"}
+payload : {"sub": "6", "iat": 1794496591, "exp": 1795101391, "type": "refresh"}
+firma   : KXljatHgGg... (43 caracteres)
+emitido : 2026-11-12 15:16:31 UTC
+expira  : 2026-11-19 15:16:31 UTC
+vigencia: 604800 segundos = 168.0 horas
+claims  : sub, iat, exp, type
+
+## 4. Uso del token en una ruta protegida (GET /athletes/all)
+sin token                         -> HTTP 401
+con token de acceso               -> HTTP 200
+con token de renovación (refresh) -> HTTP 200
+
+## 5. Renovación (POST /accounts/refresh): ¿se entrega un refresh nuevo?
+el servidor devuelve el MISMO refresh token (no hay rotación)
+
+## 6. Dónde guarda el frontend los tokens
+81:    localStorage.setItem(AUTH_TOKEN_KEY, token);
+82:    localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+84:      localStorage.setItem(AUTH_REFRESH_TOKEN_KEY, refreshToken);
+116:      localStorage.setItem(USER_DATA_KEY, JSON.stringify(updatedUser));
+8:export const AUTH_TOKEN_KEY = "kallpa_auth_token";
+13:export const AUTH_REFRESH_TOKEN_KEY = "kallpa_refresh_token";
+18:export const USER_DATA_KEY = "kallpa_user_data";
+
+## 7. Validación del token en el servidor (BackendFutbol/app/utils/security.py)
+195:        return jwt.decode(
+198:            algorithms=[settings.JWT_ALGORITHM],
+219:    if payload.get("action") != "reset_password":
+268:    if payload.get("type") != "refresh":
+273:def get_current_account(
+298:    sub = payload.get("sub")
