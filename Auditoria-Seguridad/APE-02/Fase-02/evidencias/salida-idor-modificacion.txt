@@ -1,0 +1,15 @@
+# Escenario 2 - IDOR en modificacion y eliminacion (PUT/DELETE con id ajeno)
+# Ejecutado el 2026-11-13 08:51. Cuentas y datos ficticios. Entorno local.
+
+Evaluacion objetivo: id=3, dueño user_id=7 (entrenador B), observations=ORIGINAL
+
+## PUT: el PASANTE (user_id 8), que NO es el dueño, modifica la evaluacion de B
+   PUT /evaluations/3  (token del pasante) -> HTTP 200
+   verificacion (como dueño B): observations = MODIFICADO por un usuario que NO es el dueño (prueba IDOR)
+
+## DELETE: el PASANTE elimina la evaluacion de B
+   DELETE /evaluations/3  (token del pasante) -> HTTP 200
+   verificacion (como dueño B): GET /evaluations/3 -> HTTP 404
+
+Conclusion: un usuario sin relacion con el recurso pudo MODIFICARLO y ELIMINARLO.
+El servidor respondio 200 porque solo exige sesion valida, no dueño ni rol.

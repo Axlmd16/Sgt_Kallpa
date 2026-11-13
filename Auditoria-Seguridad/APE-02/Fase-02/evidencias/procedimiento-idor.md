@@ -19,8 +19,12 @@ Las evaluaciones llevan en sus observaciones la nota «Registro ficticio… No c
 | IDOR-2 | Usuario A lee otra evaluación ajena | `GET /api/v1/evaluations/3` | 200 OK, devuelve "Evaluacion privada de A" | No (mismo defecto, recurso por id) |
 | IDOR-3 | Usuario A lista las evaluaciones de B | `GET /api/v1/evaluations/user/7` | 200 OK, devuelve la evaluación de B | No: enumera recursos de otro usuario |
 | IDOR-4 | Un pasante ve y abre evaluaciones ajenas en la interfaz | Módulo «Evaluaciones» → «Ver» | Muestra "Evaluacion privada de A" y "…de B" con botón «Editar Evaluación» | No: sin filtro por dueño |
+| IDOR-5 | Un pasante **modifica** la evaluación de otro | `PUT /api/v1/evaluations/3` | 200 OK; las observaciones quedan cambiadas (T06) | No: modificación de recurso ajeno |
+| IDOR-6 | Un pasante **elimina** la evaluación de otro | `DELETE /api/v1/evaluations/3` | 200 OK; luego `GET` devuelve 404 (T06) | No: eliminación de recurso ajeno |
 | ROL-1 | Rol no autorizado a un endpoint de staff | `GET /api/v1/users/interns` (rol común) | 403 Forbidden, "Solo entrenadores o administradores pueden realizar esta acción" | **Sí: control positivo** |
 | ROL-2 | Rol autorizado al mismo endpoint | `GET /api/v1/users/interns` (entrenador/admin) | 200 OK, "Pasantes obtenidos correctamente" | **Sí: control positivo** |
+
+Las pruebas IDOR-5 e IDOR-6 se ejecutaron de forma controlada sobre una evaluación ficticia; su salida está en [salida-idor-modificacion.txt](salida-idor-modificacion.txt).
 
 ## Interpretación
 

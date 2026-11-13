@@ -87,35 +87,103 @@ Antes de las pruebas se revisaron los tres controles que debería cumplir el acc
 | Expiración de sesión | Que un token vencido sea rechazado. | Se cumple: la firma y el `exp` se validan en `decode_token`. |
 | Validación de la firma en el servidor | Que el servidor valide la firma con su propia clave y con el algoritmo que él fija. | Se cumple: `jwt.decode` con `algorithms=[JWT_ALGORITHM]` (Sesión 1, §3.4). |
 
-## 6. Pruebas IDOR y control de roles (S2-A2)
+## 6. Laboratorio de pruebas IDOR (S2-A2)
 
-Se usaron cuentas y evaluaciones ficticias. Un **usuario A** (rol pasante, `user_id` 6) y un **usuario B** (`user_id` 7), cada uno con una evaluación propia ("Evaluacion privada de A", id 3; "…de B", id 4). Procedimiento completo en [procedimiento-idor.md](evidencias/procedimiento-idor.md).
+Se usaron cuentas y evaluaciones ficticias: un **entrenador A** y un **entrenador B**, cada uno con su evaluación propia, y un **pasante** (rol más bajo). Procedimiento completo en [procedimiento-idor.md](evidencias/procedimiento-idor.md). Se cubren los tres escenarios obligatorios de la rúbrica.
 
-| # | Prueba | Petición | Resultado | Esperado |
-|---|---|---|---|---|
-| IDOR-1 | A lee la evaluación de B | `GET /evaluations/4` | 200 OK, datos de B (T02) | 403 ✘ |
-| IDOR-2 | A lee otra evaluación ajena | `GET /evaluations/3` | 200 OK (T02) | 403 ✘ |
-| IDOR-3 | A lista las evaluaciones de B | `GET /evaluations/user/7` | 200 OK, evaluación de B (T03) | 403 ✘ |
-| IDOR-4 | Un pasante ve y abre evaluaciones ajenas en la interfaz, con botón «Editar» | Módulo Evaluaciones → Ver | Muestra las evaluaciones de A y B (T04) | Sin acceso ✘ |
-| ROL-1 | Rol común en un endpoint de staff | `GET /users/interns` | **403 Forbidden** (T05) | 403 ✔ |
-| ROL-2 | Rol autorizado en el mismo endpoint | `GET /users/interns` | 200 OK (T05) | 200 ✔ |
+### Escenario 1 — IDOR horizontal: leer datos de otro usuario
 
-**Qué significa.** Las pruebas IDOR-1 a IDOR-4 demuestran una **autorización rota a nivel de objeto**: los endpoints `/evaluations/{id}` y `/evaluations/user/{id}` solo exigen una sesión válida (`get_current_account`), sin comprobar quién es el dueño ni el rol (`evaluation_router.py:58,88,117,162,199`; el controlador no filtra por dueño). Como `PUT` y `DELETE` de `/evaluations/{id}` usan la misma dependencia, el mismo acceso aplica a **modificar y eliminar**; la interfaz ya ofrece el botón «Editar» sobre un recurso ajeno. Esto no se demostró ejecutando una modificación destructiva, pero se deduce del mismo control ausente.
+| Prueba | Petición | Resultado | Esperado |
+|---|---|---|---|
+| A lee la evaluación de B | `GET /evaluations/4` | 200 OK, devuelve datos de B (T02) | 403 ✘ |
+| A lee otra evaluación ajena | `GET /evaluations/3` | 200 OK (T02) | 403 ✘ |
+| A lista las evaluaciones de B | `GET /evaluations/user/7` | 200 OK, evaluación de B (T03) | 403 ✘ |
+| En la interfaz, un pasante ve y abre evaluaciones ajenas | Módulo Evaluaciones → Ver | Las muestra, con botón «Editar» (T04) | Sin acceso ✘ |
 
-En cambio, ROL-1 y ROL-2 muestran que **otros endpoints sí aplican rol** (`get_current_coach_or_admin` en `user_router.py:30`, `get_current_admin` en activar/desactivar). El control existe, pero no se aplica de forma homogénea: ese es el problema de fondo.
+### Escenario 2 — IDOR en modificación y eliminación (PUT/DELETE con id ajeno)
+
+Un **pasante**, que no es el dueño, modificó y luego eliminó una evaluación de otro usuario (evidencia T06, [salida-idor-modificacion.txt](evidencias/salida-idor-modificacion.txt)):
+
+| Prueba | Petición | Resultado | Esperado |
+|---|---|---|---|
+| El pasante modifica la evaluación de B | `PUT /evaluations/3` | **200 OK**; las observaciones quedaron cambiadas | 403 ✘ |
+| El pasante elimina la evaluación de B | `DELETE /evaluations/3` | **200 OK**; luego `GET` devuelve 404 | 403 ✘ |
+
+### Escenario 3 — Control de roles (usuario común vs. administrador)
+
+| Prueba | Petición | Resultado | Esperado |
+|---|---|---|---|
+| Rol común en un endpoint reservado a staff | `GET /users/interns` | **403 Forbidden** (T05) | 403 ✔ |
+| Rol autorizado (entrenador/admin) en el mismo endpoint | `GET /users/interns` | 200 OK (T05) | 200 ✔ |
+
+**Qué significa.** Los escenarios 1 y 2 demuestran una **autorización rota a nivel de objeto**: los endpoints `/evaluations/{id}` y `/evaluations/user/{id}` solo exigen una sesión válida (`get_current_account`), sin comprobar quién es el dueño ni el rol (`evaluation_router.py:58,88,117,162,199`; el controlador no filtra por dueño). El escenario 3 muestra que otros endpoints **sí** aplican rol (`get_current_coach_or_admin` en `user_router.py:30`, `get_current_admin` en activar/desactivar): el control existe, pero no se aplica de forma homogénea. Ese es el problema de fondo.
 
 ## 7. Hallazgos de la Sesión 2 (S2-A3)
 
 | ID | Hallazgo | Evidencia | Riesgo | Corrección propuesta |
 |---|---|---|---|---|
-| F2-06 | Cualquier usuario autenticado puede leer, y por el mismo control ausente modificar o eliminar, evaluaciones de otros cambiando el id en la URL (IDOR). | T02, T03, T04 | **Alta** | Verificar en cada endpoint de evaluaciones que el recurso pertenece al solicitante o que su rol lo autoriza, antes de devolver o modificar. |
-| F2-07 | La autorización por rol se aplica en unos endpoints (usuarios) pero no en otros (evaluaciones, tests). El criterio no es homogéneo. | T04, T05 | **Media** | Definir una política central de autorización y aplicarla a todos los recursos con identificador, no caso por caso. |
-| F2-08 | Al crear una evaluación, el evaluador se toma del campo `user_id` del cuerpo (`evaluation_controller.py:40`), no de la cuenta autenticada, por lo que se puede registrar a nombre de otro. | `evaluation_router.py:28` | **Media** | Tomar el evaluador del token (`current_account`) y no de la petición. |
+| F2-06 | Cualquier usuario autenticado puede leer, modificar y eliminar evaluaciones de otros cambiando el id en la URL (IDOR). | T02, T03, T04, T06 | **Alta** | Verificar en cada endpoint de evaluaciones que el recurso pertenece al solicitante o que su rol lo autoriza (sección 8). |
+| F2-07 | La autorización por rol se aplica en unos endpoints (usuarios) pero no en otros (evaluaciones, tests). El criterio no es homogéneo. | T04, T05 | **Media** | Definir una dependencia central de autorización y aplicarla a todos los recursos con identificador. |
+| F2-08 | Al crear una evaluación, el evaluador se toma del campo `user_id` del cuerpo (`evaluation_controller.py:40`), no de la cuenta autenticada. | `evaluation_router.py:28` | **Media** | Tomar el evaluador del token (`current_account`) y no de la petición. |
 
-## 8. Corrección propuesta (ejemplo)
+## 8. Corrección en el servidor (código por cada IDOR)
 
-Para F2-06, agregar la comprobación de dueño/rol en los endpoints de evaluaciones. En términos simples: antes de devolver o modificar una evaluación, el servidor debe confirmar que el usuario es administrador o el dueño del recurso; si no, responder 403. Hoy ese paso no existe y por eso devuelve 200 a cualquiera.
+La regla de fondo es: **el servidor nunca debe confiar en el id que envía el navegador para decidir el acceso.** Debe comparar el dueño del recurso con la cuenta autenticada.
 
-## 9. Consolidación
+**Escenario 1 y 2 — F2-06: verificar dueño o rol antes de leer, modificar o eliminar.** Se añade una comprobación en `evaluation_controller.py` y se usa en los endpoints `GET`, `PUT` y `DELETE` de `/evaluations/{id}`:
 
-El reporte y sus evidencias se cargan en el repositorio del proyecto. La carpeta [`evidencias/capturas`](evidencias/capturas) contiene las pruebas visuales (T01 a T05). Las cuentas y datos ficticios se eliminan con el script de limpieza de [registro.md](evidencias/registro.md).
+```python
+# app/utils/authorization.py  (nuevo)
+from app.models.account import Account
+from app.models.enums.rol import Role
+from app.utils.exceptions import UnauthorizedException
+
+def assert_owner_or_admin(account: Account, owner_user_id: int) -> None:
+    """El acceso solo se permite al administrador o al dueño del recurso."""
+    if account.role == Role.ADMINISTRATOR:
+        return
+    if account.user_id != owner_user_id:        # el id viene del recurso, no de la URL
+        raise UnauthorizedException("No tiene permiso sobre este recurso")
+```
+
+```python
+# app/services/routers/evaluation_router.py  (GET, PUT y DELETE de /{evaluation_id})
+evaluation = evaluation_controller.get_evaluation(db, evaluation_id)
+if not evaluation:
+    raise HTTPException(status_code=404, detail="Evaluación no encontrada")
+
+# CORRECCIÓN IDOR: comparar el dueño del recurso con la cuenta autenticada
+assert_owner_or_admin(current_account, evaluation.user_id)
+# ... recién aquí se devuelve, modifica o elimina la evaluación
+```
+
+**Escenario 2 — F2-08: no confiar en el `user_id` del cuerpo al crear.** El evaluador debe salir del token, no de la petición:
+
+```python
+# app/services/routers/evaluation_router.py  (POST /)
+# Antes:  payload.user_id  (lo elige quien envía la petición)
+# Después: se usa el dueño de la sesión
+evaluation = evaluation_controller.create_evaluation(
+    db=db, payload=payload, owner_user_id=current_account.user_id,
+)
+```
+
+**Escenario 3 — F2-07: aplicar la autorización de forma homogénea.** El control de rol que ya existe en los endpoints de usuarios (`get_current_coach_or_admin`) debe extenderse, junto con `assert_owner_or_admin`, a todos los recursos con identificador (evaluaciones, tests, estadísticas), para no depender de revisar endpoint por endpoint.
+
+## 9. Pregunta de control N.º 2
+
+> ¿Qué riesgos introduce un token JWT sin expiración o aceptado con el algoritmo `none`? ¿En qué se diferencia un fallo de autenticación de un fallo de autorización como IDOR, y por qué los controles deben verificarse en el servidor y no en el cliente?
+
+Un token **sin expiración** sirve para siempre: si alguien lo roba, mantiene el acceso de forma indefinida, porque no hay un momento en que el servidor deje de aceptarlo. El algoritmo **`none`** es aún más grave: declara que el token no tiene firma, de modo que, si el servidor confía en lo que dice la cabecera, cualquiera puede fabricar un token con el rol que quiera sin conocer la clave. La defensa, que Kallpa aplica, es fijar en el servidor el algoritmo (HS256) y una expiración, en lugar de confiar en el token.
+
+La diferencia entre los dos tipos de fallo es: la **autenticación** responde a «¿quién eres?» y la **autorización** a «¿qué te está permitido hacer?». Un fallo de autenticación deja entrar a alguien que no debería (por ejemplo, aceptar un token inválido). Un fallo de **autorización como IDOR** ocurre cuando el usuario sí está autenticado, pero alcanza datos que no le corresponden: en Kallpa el pasante inicia sesión correctamente, pero puede leer, modificar y eliminar evaluaciones de otros.
+
+Los controles deben verificarse **en el servidor** porque el cliente (el navegador) está bajo el control del usuario: puede cambiar el id de una URL, editar lo que guarda o enviar peticiones a mano, como hicimos en las pruebas. Ocultar un botón en la interfaz no impide nada si el servidor acepta la petición igual. Solo el servidor puede decidir de forma confiable, comparando el recurso con la sesión, si una acción está permitida.
+
+## 10. Consolidación y enlace al repositorio
+
+El reporte y sus evidencias se cargan en el repositorio del proyecto, en `Auditoria-Seguridad/APE-02/Fase-02/`. La carpeta [`evidencias/capturas`](evidencias/capturas) contiene las pruebas visuales (T01 a T05) y [`salida-idor-modificacion.txt`](evidencias/salida-idor-modificacion.txt) la del escenario 2 (T06).
+
+**Repositorio:** https://github.com/Axlmd16/Sgt_Kallpa/tree/master/Auditoria-Seguridad/APE-02/Fase-02
+
+Las cuentas y datos ficticios se eliminan con el script de limpieza de [registro.md](evidencias/registro.md).

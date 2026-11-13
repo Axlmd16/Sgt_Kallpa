@@ -16,6 +16,7 @@
 | T03 | 13 nov 2026 | Un usuario lista las evaluaciones de otro (`GET /evaluations/user/7`) | [captura](capturas/T03-idor-lista-evaluaciones-de-otro.png) |
 | T04 | 13 nov 2026 | En la interfaz, un pasante ve y abre evaluaciones ajenas (con botón «Editar») | [listado](capturas/T04-ui-pasante-ve-evaluaciones-ajenas.png) · [detalle](capturas/T04-ui-pasante-abre-evaluacion-ajena.png) |
 | T05 | 13 nov 2026 | Control de rol: `GET /users/interns` da 403 a un rol común y 200 a entrenador/admin | [403](capturas/T05-rol-bloqueado-403.png) · [200](capturas/T05-rol-permitido-200.png) |
+| T06 | 13 nov 2026 | IDOR de modificación/eliminación: un pasante modifica (`PUT`) y elimina (`DELETE`) la evaluación de otro → 200 OK y luego 404 | [salida-idor-modificacion.txt](salida-idor-modificacion.txt) |
 
 El procedimiento detallado de la Sesión 2 está en [procedimiento-idor.md](procedimiento-idor.md).
 
