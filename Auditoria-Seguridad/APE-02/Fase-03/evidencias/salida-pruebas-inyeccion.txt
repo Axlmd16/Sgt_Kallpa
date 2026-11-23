@@ -1,0 +1,80 @@
+# APE 02 — Fase 3: Explotación controlada y verificación de SQLi y XSS
+# Ejecutado contra API=http://localhost:8001/api/v1 | FRONTEND=http://localhost:5173 | DVWA=http://127.0.0.1:4280
+
+======================================================================
+## PARTE 1. Entorno controlado DVWA (Sesión 1: Explotación vs. Sesión 2: Mitigación)
+======================================================================
+
+### 1.1 DVWA Nivel LOW (Vulnerable)
+[PoC-1] SQLi comilla simple (id='):
+  Respuesta: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''''' at line 1
+[PoC-2] SQLi tautología (id=' OR '1'='1) -> 5 registros extraídos:
+  - ID: ' OR '1'='1 | First name: admin | Surname: admin
+  - ID: ' OR '1'='1 | First name: Gordon | Surname: Brown
+  - ID: ' OR '1'='1 | First name: Hack | Surname: Me
+  - ID: ' OR '1'='1 | First name: Pablo | Surname: Picasso
+  - ID: ' OR '1'='1 | First name: Bob | Surname: Smith
+[PoC-3] XSS reflejado (name=<script>alert('XSS-APE02')</script>):
+  HTML devuelto sin escapar: Hello <script>alert('XSS-APE02')</script>
+
+### 1.2 DVWA Nivel IMPOSSIBLE (Mitigado con PDO parametrizado y htmlspecialchars)
+[Verif-1] SQLi tautología en nivel Impossible -> 0 registros devueltos (ataque bloqueado)
+[Verif-2] XSS reflejado en nivel Impossible:
+  HTML devuelto con htmlspecialchars: Hello &lt;script&gt;alert('XSS-APE02')&lt;/script&gt;
+
+======================================================================
+## PARTE 2. Verificación en el proyecto propio Kallpa UNL
+======================================================================
+
+### 2.1 Intento de SQLi por tautología en login (POST /accounts/login)
+{"status":"error","message":"Error de validación. Revisa los campos enviados.","data":null,"errors":{"email":["El correo electrónico no es válido"]}}
+HTTP_STATUS:422
+
+### 2.2 Intento de SQLi en contraseña con correo válido (POST /accounts/login)
+{"status":"error","message":"Credenciales inválidas","data":null,"errors":null}
+HTTP_STATUS:401
+
+### 2.3 Inicio de sesión legítimo con cuenta ficticia de auditoría
+{
+  "status": "success",
+  "message": "Inicio de sesión exitoso",
+  "token_type": "bearer"
+}
+
+### 2.4 Payloads de SQLi sobre buscadores y endpoints con parámetros (GET)
+Payload: [']
+  /athletes/all?search=...        -> status=success | total=0
+  /users/all?search=...           -> status=success | total=4
+  /evaluations/?search=...        -> status=success | total=0
+  /representatives/by-dni/...     -> status=error | message=Representante no encontrado
+Payload: [' OR '1'='1]
+  /athletes/all?search=...        -> status=success | total=0
+  /users/all?search=...           -> status=success | total=0
+  /evaluations/?search=...        -> status=success | total=0
+  /representatives/by-dni/...     -> status=error | message=Representante no encontrado
+Payload: [100%']
+  /athletes/all?search=...        -> status=success | total=0
+  /users/all?search=...           -> status=success | total=0
+  /evaluations/?search=...        -> status=success | total=0
+  /representatives/by-dni/...     -> status=error | message=Representante no encontrado
+Payload: [1; DROP TABLE users;--]
+  /athletes/all?search=...        -> status=success | total=0
+  /users/all?search=...           -> status=success | total=0
+  /evaluations/?search=...        -> status=success | total=0
+  /representatives/by-dni/...     -> status=error | message=Representante no encontrado
+
+### 2.5 Prueba de XSS almacenado/reflejado en API y escapado en Jinja2 (Reportes PDF)
+[SQLAlchemy Login Query]: SELECT accounts.email, accounts.password_hash, accounts.role, accounts.user_id, accounts.id, accounts.created_at, accounts.updated_at, accounts.is_active 
+FROM accounts 
+WHERE accounts.email = %(email_1)s
+  Parámetros enlazados: {'email_1': "' OR '1'='1"}
+[SQLAlchemy Search Query]: SELECT athletes.external_person_id, athletes.full_name, athletes.dni, athletes.type_athlete, athletes.date_of_birth, athletes.height, athletes.weight, athletes.sex, athletes.representative_id, athletes.id, athletes.created_at, athletes.updated_at, athletes.is_active 
+FROM athletes 
+WHERE athletes.full_name ILIKE %(full_name_1)s
+  Parámetros enlazados: {'full_name_1': "%' OR '1'='1%"}
+[Jinja2 Autoescape Render]: <td>&lt;script&gt;alert(&#39;XSS-APE02&#39;)&lt;/script&gt;</td> | <strong>Generado por:</strong> Entrenador &lt;img src=x onerror=alert(1)&gt;
+
+### 2.6 Verificación de cabeceras de defensa en profundidad contra XSS (Frontend Nginx)
+HTTP/1.1 200 OK
+Cache-Control: no-cache
+Cache-Control: no-store, no-cache, must-revalidate
