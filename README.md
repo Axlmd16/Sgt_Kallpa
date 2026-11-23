@@ -120,3 +120,17 @@ uv run pytest
 ```
 
 Consulta [el README del backend](BackendFutbol/README.md) y [la guía de seguimiento del frontend](FrontendFutbol/src/features/seguimiento/README.md) para detalles de cada módulo.
+
+## Auditoría de Seguridad (Unidad 1 — Software Security UNL)
+
+El portafolio de auditoría técnica y endurecimiento del proyecto está organizado en [`Auditoria-Seguridad/`](Auditoria-Seguridad/):
+
+- **[APE 01 — Análisis y superficie de ataque](Auditoria-Seguridad/APE-01/README.md):**
+  - [Fase 1 — Ficha e inventario de superficie](Auditoria-Seguridad/APE-01/Fase-01/README.md)
+  - [Fase 2 — Matriz de activos, amenazas y defensa en profundidad](Auditoria-Seguridad/APE-01/Fase-02/README.md)
+  - [Fase 4 — Lista de cotejo OWASP Top 10:2025 y matriz de priorización](Auditoria-Seguridad/APE-01/Fase-04/README.md)
+- **[APE 02 — Auditoría técnica y endurecimiento de la aplicación](Auditoria-Seguridad/APE-02/README.md):**
+  - [Fase 1 — Criptografía aplicada: hashing, salting y secretos](Auditoria-Seguridad/APE-02/Fase-01/README.md)
+  - [Fase 2 — Control de acceso: análisis de JWT y pruebas IDOR](Auditoria-Seguridad/APE-02/Fase-02/README.md)
+  - [Fase 3 — Ataques de inyección: explotación controlada y mitigación de SQLi y XSS](Auditoria-Seguridad/APE-02/Fase-03/README.md)
+  - [Fase 4 — Análisis estático (SAST) y endurecimiento en contenedores Docker](Auditoria-Seguridad/APE-02/Fase-04/README.md)

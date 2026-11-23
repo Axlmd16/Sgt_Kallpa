@@ -10,4 +10,4 @@ Cada fase produce un informe con el formato hallazgo, riesgo y corrección, a pa
 | 1 | 5 | Criptografía aplicada: hashing, salting y secretos | [Fase-01](Fase-01/README.md) | Completada |
 | 2 | 6 | Control de acceso: JWT e IDOR | [Fase-02](Fase-02/README.md) | Completada |
 | 3 | 7 | Inyección: SQLi y XSS | [Fase-03](Fase-03/README.md) | Completada |
-| 4 | 8 | SAST y contenedores Docker | — | Pendiente |
+| 4 | 8 | SAST y contenedores Docker | [Fase-04](Fase-04/README.md) | Completada |

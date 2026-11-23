@@ -1,0 +1,70 @@
+Run started:2026-11-23 15:55:28.978394+00:00
+
+Test results:
+>> Issue: [B106:hardcoded_password_funcarg] Possible hardcoded password: 'bearer'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b106_hardcoded_password_funcarg.html
+   Location: BackendFutbol/app/controllers/account_controller.py:55:15
+54	            refresh_token=refresh_token,
+55	            token_type="bearer",  # nosec
+56	            expires_in=settings.TOKEN_EXPIRES,
+57	            refresh_expires_in=settings.REFRESH_TOKEN_EXPIRES,
+58	        )
+59	
+60	    def generate_jwt(self, account: Account) -> str:
+61	        """Generar un JWT de acceso para la cuenta.
+62	
+
+--------------------------------------------------
+>> Issue: [B106:hardcoded_password_funcarg] Possible hardcoded password: 'bearer'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b106_hardcoded_password_funcarg.html
+   Location: BackendFutbol/app/controllers/account_controller.py:177:15
+176	            refresh_token=payload.refresh_token,  # Reutilizar el refresh token
+177	            token_type="bearer",  # nosec
+178	            expires_in=settings.TOKEN_EXPIRES,
+179	            refresh_expires_in=settings.REFRESH_TOKEN_EXPIRES,
+180	        )
+
+--------------------------------------------------
+>> Issue: [B104:hardcoded_bind_all_interfaces] Possible binding to all interfaces.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-605 (https://cwe.mitre.org/data/definitions/605.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b104_hardcoded_bind_all_interfaces.html
+   Location: BackendFutbol/app/core/config.py:19:20
+18	    APP_PORT: int = 8000
+19	    APP_HOST: str = "0.0.0.0"  # nosec
+20	    DEBUG: bool = False
+
+--------------------------------------------------
+>> Issue: [B110:try_except_pass] Try, Except, Pass detected.
+   Severity: Low   Confidence: High
+   CWE: CWE-703 (https://cwe.mitre.org/data/definitions/703.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b110_try_except_pass.html
+   Location: BackendFutbol/app/services/report_service.py:785:12
+784	                filters_dict["Deportista"] = athlete.full_name if athlete else ""
+785	            except Exception:
+786	                pass  # nosec
+787	
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 11552
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 3
+		Medium: 1
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 3
+		High: 1
+Files skipped (0):

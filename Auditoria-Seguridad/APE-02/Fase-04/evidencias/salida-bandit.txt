@@ -1,0 +1,183 @@
+Run started:2026-11-23 15:55:08.644438+00:00
+
+Test results:
+>> Issue: [B310:blacklist] Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.
+   Severity: Medium   Confidence: High
+   CWE: CWE-22 (https://cwe.mitre.org/data/definitions/22.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b310-urllib-urlopen
+   Location: BackendFutbol/scripts/init_person_ms.py:20:13
+19	    try:
+20	        with urlopen(req, timeout=10) as response:
+21	            return response.status, response.read()
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'dev_password'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: BackendFutbol/scripts/migrate_data.py:27:4
+26	    "user": "dev_user",
+27	    "password": "dev_password",
+28	    "dbname": "futbol_db",
+29	}
+30	
+31	MARIADB_CONFIG = {
+32	    "host": "localhost",
+33	    "port": 3306,
+34	    "user": "root",
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'rootpass'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: BackendFutbol/scripts/migrate_data.py:35:4
+34	    "user": "root",
+35	    "password": "rootpass",
+36	    "database": "sportDB",
+37	}
+38	
+39	# Roles y tipos
+40	ROLES = ["ADMINISTRATOR", "COACH", "INTERN"]
+41	# ATHLETE_TYPES se toma del campo type_stament de cada persona
+42	RELATIONSHIP_TYPES = ["FATHER", "MOTHER", "LEGAL_GUARDIAN"]
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:60:11
+59	    today = date.today()
+60	    days = random.randint(18 * 365, 45 * 365)
+61	    return today - timedelta(days=days)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:66:11
+65	    today = date.today()
+66	    days = random.randint(8 * 365, 17 * 365)
+67	    return today - timedelta(days=days)
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'admin123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: BackendFutbol/scripts/migrate_data.py:175:34
+174	    fixed_users = [
+175	        {"role": "ADMINISTRATOR", "pwd": "admin123", "email_prefix": "admin"},
+176	        {"role": "COACH", "pwd": "coach123", "email_prefix": "coach"},
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'coach123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: BackendFutbol/scripts/migrate_data.py:176:26
+175	        {"role": "ADMINISTRATOR", "pwd": "admin123", "email_prefix": "admin"},
+176	        {"role": "COACH", "pwd": "coach123", "email_prefix": "coach"},
+177	        {"role": "INTERN", "pwd": "intern123", "email_prefix": "intern"},
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'intern123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: BackendFutbol/scripts/migrate_data.py:177:27
+176	        {"role": "COACH", "pwd": "coach123", "email_prefix": "coach"},
+177	        {"role": "INTERN", "pwd": "intern123", "email_prefix": "intern"},
+178	    ]
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:252:18
+251	            )
+252	            rel = random.choice(RELATIONSHIP_TYPES)
+253	
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:273:18
+272	            dob = generate_date_minor()
+273	            sex = random.choice(SEXES)
+274	            h = round(random.uniform(1.40, 1.75), 2)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:274:22
+273	            sex = random.choice(SEXES)
+274	            h = round(random.uniform(1.40, 1.75), 2)
+275	            w = round(random.uniform(35, 65), 1)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:275:22
+274	            h = round(random.uniform(1.40, 1.75), 2)
+275	            w = round(random.uniform(35, 65), 1)
+276	            atype = minor_person.get("type_stament", "EXTERNOS")
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:324:18
+323	            dob = generate_date_adult()
+324	            sex = random.choice(SEXES)
+325	            h = round(random.uniform(1.60, 1.90), 2)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:325:22
+324	            sex = random.choice(SEXES)
+325	            h = round(random.uniform(1.60, 1.90), 2)
+326	            w = round(random.uniform(55, 85), 1)
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: BackendFutbol/scripts/migrate_data.py:326:22
+325	            h = round(random.uniform(1.60, 1.90), 2)
+326	            w = round(random.uniform(55, 85), 1)
+327	            atype = p.get("type_stament", "EXTERNOS")  # Usar el tipo real de la persona
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 11917
+	Total lines skipped (#nosec): 4
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 14
+		Medium: 1
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 5
+		High: 10
+Files skipped (0):
